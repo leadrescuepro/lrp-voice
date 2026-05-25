@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LeadRescuePro Voice v2</title>
-<!-- Cache buster: always load fresh -->
+<title>LeadRescuePro Voice v3</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -180,73 +179,100 @@
 </div>
 
 <script>
-// ===== VERSION: v2.1 (CORS fix, cache bust) =====
+// v3 — ROOT CAUSE FIX: localtunnel captcha bypass + content-type check
+// 
+// ROOT CAUSE: loca.lt (localtunnel server) intercepts browser requests from
+// unknown/new IPs and shows a "511 Network Authentication Required" captcha
+// page. The old code got HTML back instead of JSON, and r.json() would throw.
+// 
+// FIX: (1) Add 'bypass-tunnel-reminder' header to every fetch, which tells
+// localtunnel to skip the captcha. (2) Check Content-Type before parsing JSON.
+// (3) If we get HTML (captcha page), show a clear message and auto-retry.
 
-// ===== PIN =====
 const PIN = '4791';
-const pinInputs = document.querySelectorAll('.pin-digit');
-pinInputs.forEach((el, i, arr) => {
-  el.addEventListener('input', function() {
-    this.value = this.value.replace(/[^0-9]/g, '');
-    if (this.value) { this.classList.add('filled'); if (arr[i+1]) arr[i+1].focus(); }
-    else this.classList.remove('filled');
-    document.getElementById('unlockBtn').disabled = getPin().length < 4;
+
+// Pin input logic
+(function() {
+  const inputs = document.querySelectorAll('.pin-digit');
+  inputs.forEach((el, i, arr) => {
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      if (this.value) { this.classList.add('filled'); if (arr[i+1]) setTimeout(() => arr[i+1].focus(), 50); }
+      else this.classList.remove('filled');
+      document.getElementById('unlockBtn').disabled = getPinVal().length < 4;
+    });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !this.value && i > 0) arr[i-1].focus();
+      if (e.key === 'Enter') unlock();
+    });
   });
-  el.addEventListener('keydown', function(e) {
-    if (e.key === 'Backspace' && !this.value && i > 0) arr[i-1].focus();
-    if (e.key === 'Enter') unlock();
-  });
-});
-function getPin() { return Array.from(pinInputs).map(e => e.value).join(''); }
+  function getPinVal() { return Array.from(inputs).map(e => e.value).join(''); }
+  window.getPin = getPinVal;
+})();
+
 function unlock() {
-  if (getPin() !== PIN) {
+  if (window.getPin() !== PIN) {
     document.getElementById('pinError').textContent = 'Wrong PIN';
-    pinInputs.forEach(e => { e.value = ''; e.classList.remove('filled'); });
-    pinInputs[0].focus();
+    document.querySelectorAll('.pin-digit').forEach(e => { e.value = ''; e.classList.remove('filled'); });
+    document.querySelector('.pin-digit').focus();
     return;
   }
   localStorage.setItem('lrp_pin', 'ok');
   bootApp();
 }
-if (localStorage.getItem('lrp_pin') === 'ok') { bootApp(); }
+if (localStorage.getItem('lrp_pin') === 'ok') bootApp();
 
-// ===== CORE =====
+// ===== STATE =====
 let listening = false, processing = false, speaking = false;
 let recog = null, prefVoice = '', voiceList = [];
 const hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-const mb = document.getElementById('micButton'), sd = document.getElementById('statusDot'), sl = document.getElementById('statusLabel');
-const conv = document.getElementById('conversation'), vs = document.getElementById('voiceSelect'), ti = document.getElementById('textInput');
-const cs = document.getElementById('connStatus');
+const $ = id => document.getElementById(id);
+const mb = $('micButton'), sd = $('statusDot'), sl = $('statusLabel');
+const conv = $('conversation'), vs = $('voiceSelect'), ti = $('textInput'), cs = $('connStatus');
 
-// Detect if we're on GitHub Pages (cross-origin) or direct tunnel (same-origin)
+// Detect if cross-origin (GitHub Pages) vs same-origin (tunnel)
 const TUNNEL_HOST = 'https://lrp-voice.loca.lt';
-const USE_TUNNEL = window.location.hostname.includes('github.io') || window.location.hostname.includes('pages.dev');
+const CROSS = window.location.hostname.includes('github.io') || window.location.hostname.includes('pages.dev');
+
+// Send bypass-tunnel-reminder on ALL requests so localtunnel
+// doesn't intercept with its 511 captcha page.
+function apiHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'bypass-tunnel-reminder': 'true'
+  };
+}
 
 function bootApp() {
-  document.getElementById('pinGate').style.display = 'none';
-  document.getElementById('mainUI').style.display = 'block';
-  document.getElementById('textInput').disabled = false;
-  document.getElementById('textInput').focus();
+  $('pinGate').style.display = 'none';
+  $('mainUI').style.display = 'block';
+  ti.disabled = false;
+  ti.focus();
   addMsg('assistant', "Hello Fahim! Tap the mic and speak, or type.");
   setTimeout(() => setStatus('idle', 'Tap the mic or type'), 200);
-  // Check backend immediately
   checkConn();
 }
 
 function setStatus(s, label) {
-  sd.className = 'status-dot ' + s; mb.className = 'mic-button'; sl.textContent = label;
-  listening = s === 'listening'; processing = s === 'processing'; speaking = s === 'speaking';
+  sd.className = 'status-dot ' + s;
+  mb.className = 'mic-button';
+  sl.textContent = label;
+  listening = s === 'listening';
+  processing = s === 'processing';
+  speaking = s === 'speaking';
   if (s === 'listening') mb.classList.add('active');
   else if (s === 'processing') mb.classList.add('processing');
   else if (s === 'speaking') mb.classList.add('speaking');
 }
 
 function escape(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
 function addMsg(role, text) {
   const d = document.createElement('div'); d.className = 'transcript-box';
   d.innerHTML = '<div class="label">' + (role === 'user' ? 'You' : 'LeadRescuePro') + '</div><div class="text ' + role + '">' + escape(text) + '</div>';
   conv.appendChild(d); conv.scrollTop = conv.scrollHeight;
 }
+
 function clearChat() { conv.innerHTML = ''; addMsg('assistant', 'Cleared.'); }
 
 // ===== VOICES =====
@@ -274,63 +300,74 @@ function speak(text) {
   });
 }
 
-// ===== BACKEND CHECK =====
+// ===== BACKEND CHECK (with bypass header) =====
 async function checkConn() {
-  cs.className = 'status-line checking'; cs.textContent = '⬤ Checking backend...';
-  const url = USE_TUNNEL ? TUNNEL_HOST + '/health' : '/health';
-  // Add cache busting param
-  const fetchUrl = url + '?_=' + Date.now();
+  cs.className = 'status-line checking';
+  cs.textContent = '⬤ Checking...';
+  const url = (CROSS ? TUNNEL_HOST : '') + '/health?_=' + Date.now();
   try {
-    const r = await fetch(fetchUrl);
-    const d = await r.json();
-    if (d && d.status === 'ok') {
-      cs.className = 'status-line online'; cs.textContent = '⬤ Connected';
-    } else {
-      throw 'bad status';
+    const r = await fetch(url, { headers: apiHeaders() });
+    const ct = r.headers.get('content-type') || '';
+    if (ct.includes('json')) {
+      const d = await r.json();
+      if (d && d.status === 'ok') {
+        cs.className = 'status-line online';
+        cs.textContent = '⬤ Connected';
+        return;
+      }
     }
+    // Captcha page or unexpected response
+    throw 'captcha-or-error';
   } catch(e) {
     cs.className = 'status-line offline';
     cs.textContent = '⬤ Backend offline';
-    // Retry after 3 seconds
-    setTimeout(checkConn, 3000);
+    setTimeout(checkConn, 4000);
   }
 }
 
-// ===== API CALL =====
+// ===== API CALL (with bypass header + content-type check) =====
 async function callAPI(text) {
   setStatus('processing', 'Thinking...');
-  const url = (USE_TUNNEL ? TUNNEL_HOST : '') + '/api/chat?_=' + Date.now();
+  const url = (CROSS ? TUNNEL_HOST : '') + '/api/chat?_=' + Date.now();
   const body = JSON.stringify({ message: text, session_id: 'v_' + Date.now() });
+
   for (let i = 0; i < 3; i++) {
     try {
       const r = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: apiHeaders(),
         body: body
       });
+      // CRITICAL: Check if localtunnel returned its captcha HTML page
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('json')) {
+        throw 'localtunnel-captcha';
+      }
       if (!r.ok) throw 'HTTP ' + r.status;
       const d = await r.json();
       return d.response;
     } catch(e) {
+      const msg = e === 'localtunnel-captcha'
+        ? 'LocalTunnel captcha page. Retrying...'
+        : 'Retry ' + (i+2) + '/3...';
       if (i < 2) {
-        await new Promise(r => setTimeout(r, 1500));
-        setStatus('processing', 'Retry ' + (i+2) + '/3...');
+        await new Promise(r => setTimeout(r, 2000));
+        setStatus('processing', msg);
       }
     }
   }
   cs.className = 'status-line offline';
   cs.textContent = '⬤ Backend offline';
-  return "Backend appears offline. Please try the direct tunnel URL: https://lrp-voice.loca.lt";
+  return "Backend appears offline. Please try the direct tunnel URL: " + TUNNEL_HOST;
 }
 
 async function processAndSpeak(text) {
   const resp = await callAPI(text);
   addMsg('assistant', resp);
-  // Update status
   if (resp.includes('offline')) {
     cs.className = 'status-line offline';
     cs.textContent = '⬤ Backend offline';
-    setTimeout(checkConn, 3000);
+    setTimeout(checkConn, 4000);
   } else {
     cs.className = 'status-line online';
     cs.textContent = '⬤ Connected';
@@ -360,33 +397,23 @@ function startMic() {
   try {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     recog = new SR();
-    recog.continuous = false;
-    recog.interimResults = false;
-    recog.lang = 'en-US';
+    recog.continuous = false; recog.interimResults = false; recog.lang = 'en-US';
     recog.onresult = function(e) {
-      const t = e.results[0][0].transcript;
-      addMsg('user', t);
-      processAndSpeak(t);
+      const t = e.results[0][0].transcript; addMsg('user', t); processAndSpeak(t);
     };
     recog.onerror = function(e) {
       if (e.error === 'not-allowed') setStatus('error', 'Mic blocked');
-      else if (e.error === 'no-speech') setStatus('idle', 'Tap the mic or type');
+      else if (e.error === 'no-speech') setStatus('idle', 'Tap mic or type');
       else setStatus('error', e.error);
-      setTimeout(() => { if (!processing && !speaking) setStatus('idle', 'Tap the mic or type'); }, 2000);
+      setTimeout(() => { if (!processing && !speaking) setStatus('idle', 'Tap mic or type'); }, 2000);
     };
-    recog.onend = function() {
-      if (!processing && !speaking) setStatus('idle', 'Tap the mic or type');
-    };
-    recog.start();
-    setStatus('listening', 'Listening...');
-  } catch(e) {
-    setStatus('error', 'Mic error');
-    setTimeout(() => setStatus('idle', 'Type'), 2000);
-  }
+    recog.onend = function() { if (!processing && !speaking) setStatus('idle', 'Tap mic or type'); };
+    recog.start(); setStatus('listening', 'Listening...');
+  } catch(e) { setStatus('error', 'Mic error'); setTimeout(() => setStatus('idle', 'Type'), 2000); }
 }
 function stopMic() {
   if (recog) { try { recog.stop(); } catch(e) {} recog = null; }
-  if (!processing && !speaking) setStatus('idle', 'Tap the mic or type');
+  if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
 }
 
 document.addEventListener('keydown', function(e) {
