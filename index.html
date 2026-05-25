@@ -140,6 +140,7 @@ audio{display:none}
     <div class="cl">
       <button id="cb">Clear</button>
       <button id="smartToggle">🧠 Smart</button>
+      <button id="rtToggle" style="border-color:#2ed573">🔴 Real-Time</button>
     </div>
 
     <div class="ht">Tap the mic and speak, or type below</div>
@@ -399,6 +400,39 @@ document.getElementById('smartToggle').addEventListener('click',function(e){
   this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
   this.style.borderColor=window._smartMode?'#00d4ff':'';
   document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription (Whisper+DeepSeek)':'⚡ Browser STT';
+});
+document.getElementById('rtToggle').addEventListener('click',function(e){
+  e.preventDefault();
+  window._rtMode=!window._rtMode;
+  this.textContent=window._rtMode?'🟢 Real-Time ON':'🔴 Real-Time';
+  this.style.borderColor=window._rtMode?'#2ed573':'';
+  if(window._rtMode){
+    document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice (WebSocket streaming)';
+    // Open real-time WebSocket connection
+    var wsUrl=window.location.origin.replace('http','ws')+'/ws';
+    window._rtWs=new WebSocket(wsUrl);
+    window._rtWs.onopen=function(){
+      cs.className='sl ok';cs.textContent='⬤ Real-Time';
+      addMsg('h','Real-Time mode active. Speak and I will respond instantly.');
+    };
+    window._rtWs.onerror=function(){
+      addMsg('h','Real-Time unavailable. Switch back to normal mode.');
+      window._rtMode=false;
+      document.getElementById('rtToggle').textContent='🔴 Real-Time';
+      document.getElementById('rtToggle').style.borderColor='';
+      document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+    };
+    window._rtWs.onclose=function(){
+      if(window._rtMode){
+        cs.className='sl no';cs.textContent='⬤ Disconnected';
+      }
+    };
+  }else{
+    if(window._rtWs){window._rtWs.close();window._rtWs=null;}
+    cs.className='sl ch';cs.textContent='⬤ Connecting...';
+    document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+    checkB();
+  }
 });
 document.addEventListener('keydown',function(e){
   if(e.target.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();tm();}
