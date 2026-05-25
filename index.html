@@ -24,7 +24,6 @@
   }
   .header p { font-size: 13px; color: #5a7a9a; margin-top: 4px; }
 
-  /* PIN Gate */
   #pinGate {
     background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
     border: 1px solid #1a2a44; border-radius: 16px;
@@ -50,7 +49,6 @@
   }
   #pinGate button:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* Main UI */
   #mainUI { display: none; }
   .status-dot {
     display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
@@ -120,6 +118,7 @@
   .tunnel-status { font-size: 11px; color: #3a4a5a; margin-top: 20px; }
   .tunnel-status.online { color: #2ed573; }
   .tunnel-status.offline { color: #ff4757; }
+  .tunnel-status.checking { color: #ffa502; }
 </style>
 </head>
 <body>
@@ -129,7 +128,6 @@
     <p>Voice Assistant</p>
   </div>
 
-  <!-- PIN Gate -->
   <div id="pinGate">
     <div class="lock-icon">🔒</div>
     <h2>Access Required</h2>
@@ -144,7 +142,6 @@
     <button id="unlockBtn" disabled onclick="checkPin()">Unlock</button>
   </div>
 
-  <!-- Main UI -->
   <div id="mainUI">
     <div id="status" class="status-text">
       <span class="status-dot idle" id="statusDot"></span>
@@ -174,7 +171,7 @@
     </div>
 
     <div class="hint">Tap mic to speak, or type. Press <kbd>Space</kbd> to toggle mic.</div>
-    <div id="tunnelStatus" class="tunnel-status offline">⬤ Backend offline</div>
+    <div id="tunnelStatus" class="tunnel-status checking">⬤ Checking connection...</div>
   </div>
 </div>
 
@@ -206,6 +203,7 @@ function checkPin() {
     document.getElementById('textInput').disabled = false;
     document.getElementById('textInput').focus();
     localStorage.setItem('lrp_voice_pin', 'verified');
+    checkBackend();
   } else {
     document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
     document.querySelectorAll('.pin-digit').forEach(i => { i.value = ''; i.classList.remove('filled'); });
@@ -219,6 +217,7 @@ if (localStorage.getItem('lrp_voice_pin') === 'verified') {
   document.getElementById('mainUI').style.display = 'block';
   document.getElementById('textInput').disabled = false;
   setTimeout(() => document.getElementById('textInput').focus(), 300);
+  setTimeout(checkBackend, 500);
 }
 
 // ===== State =====
@@ -233,7 +232,7 @@ const conversation = document.getElementById('conversation');
 const voiceSelect = document.getElementById('voiceSelect');
 const textInput = document.getElementById('textInput');
 
-// ===== Tunnel URL (changing to lrp-voice.loca.lt) =====
+// Update this if tunnel subdomain changes
 const API_BASE = 'https://lrp-voice.loca.lt';
 
 function setStatus(state, label) {
@@ -283,23 +282,51 @@ function speak(text) {
   });
 }
 
-async function sendToHermes(text) {
-  setStatus('processing', 'Thinking...');
+// ===== Check backend health =====
+async function checkBackend() {
+  const ts = document.getElementById('tunnelStatus');
+  ts.className = 'tunnel-status checking';
+  ts.textContent = '⬤ Checking connection...';
   try {
-    const resp = await fetch(API_BASE + '/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, session_id: getSessionId() })
-    });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const resp = await fetch(API_BASE + '/health', { method: 'GET', mode: 'cors' });
     const data = await resp.json();
-    return data.response;
+    if (data.status === 'ok') {
+      ts.className = 'tunnel-status online';
+      ts.textContent = '⬤ Connected';
+    } else {
+      ts.className = 'tunnel-status offline';
+      ts.textContent = '⬤ Backend offline';
+    }
   } catch (e) {
-    console.error('API error:', e);
-    document.getElementById('tunnelStatus').className = 'tunnel-status offline';
-    document.getElementById('tunnelStatus').textContent = '⬤ Backend offline';
-    return "Sorry, the backend is offline. Let Fahim know to restart the tunnel.";
+    ts.className = 'tunnel-status offline';
+    ts.textContent = '⬤ Backend offline';
   }
+}
+
+// ===== Send to Hermes with retry =====
+async function sendToHermes(text, retries = 2) {
+  setStatus('processing', 'Thinking...');
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const resp = await fetch(API_BASE + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_id: getSessionId() })
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      return data.response;
+    } catch (e) {
+      console.error('API error (attempt', attempt + 1, '):', e);
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 1500));
+        setStatus('processing', 'Retrying...');
+      }
+    }
+  }
+  document.getElementById('tunnelStatus').className = 'tunnel-status offline';
+  document.getElementById('tunnelStatus').textContent = '⬤ Backend offline';
+  return "I'm temporarily disconnected. I've noted your message and will respond as soon as I reconnect. Try again in a moment.";
 }
 
 function getSessionId() {
@@ -311,7 +338,7 @@ function getSessionId() {
 async function processAndSpeak(text) {
   const response = await sendToHermes(text);
   addMessage('assistant', response);
-  if (!response.includes("backend is offline")) {
+  if (!response.includes("disconnected")) {
     document.getElementById('tunnelStatus').className = 'tunnel-status online';
     document.getElementById('tunnelStatus').textContent = '⬤ Connected';
   }
@@ -371,17 +398,8 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ===== Init =====
-if (document.getElementById('mainUI').style.display !== 'none') {
-  addMessage('assistant', "Hello Fahim! I'm your LeadRescuePro voice assistant. Tap the microphone and speak, or type below.");
-  setTimeout(function() { setStatus('idle', 'Tap the mic or type'); }, 300);
-  // Check backend
-  fetch(API_BASE + '/health').then(r => r.json()).then(d => {
-    if (d.status === 'ok') {
-      document.getElementById('tunnelStatus').className = 'tunnel-status online';
-      document.getElementById('tunnelStatus').textContent = '⬤ Connected';
-    }
-  }).catch(() => {});
-}
+addMessage('assistant', "Hello Fahim! I'm your LeadRescuePro voice assistant. Tap the microphone and speak, or type below.");
+setTimeout(function() { setStatus('idle', 'Tap the mic or type'); }, 300);
 </script>
 </body>
 </html>
