@@ -41,7 +41,7 @@
   }
   .pin-input-group input:focus { border-color: #00d4ff; }
   .pin-input-group input.filled { border-color: #2ed573; }
-  .pin-error { color: #ff4757; font-size: 13px; min-height: 20px; }
+  .pin-error { color: #ff4757; font-size: 13px; min-height: 20px; margin-bottom: 4px; }
   #pinGate button {
     padding: 12px 40px; background: linear-gradient(135deg, #00d4ff 0%, #0088cc 100%);
     border: none; border-radius: 8px; color: #fff; font-weight: 700;
@@ -115,10 +115,10 @@
   }
   .hint { font-size: 12px; color: #3a4a5a; margin-top: 16px; }
   .hint kbd { background: #11192e; border: 1px solid #1a2a44; padding: 2px 6px; border-radius: 3px; font-size: 11px; }
-  .tunnel-status { font-size: 11px; color: #3a4a5a; margin-top: 20px; }
-  .tunnel-status.online { color: #2ed573; }
-  .tunnel-status.offline { color: #ff4757; }
-  .tunnel-status.checking { color: #ffa502; }
+  .status-line { font-size: 11px; margin-top: 20px; }
+  .status-line.online { color: #2ed573; }
+  .status-line.offline { color: #ff4757; }
+  .status-line.checking { color: #ffa502; }
 </style>
 </head>
 <body>
@@ -139,13 +139,13 @@
       <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="3">
     </div>
     <div class="pin-error" id="pinError"></div>
-    <button id="unlockBtn" disabled onclick="checkPin()">Unlock</button>
+    <button id="unlockBtn" disabled onclick="unlock()">Unlock</button>
   </div>
 
   <div id="mainUI">
     <div id="status" class="status-text">
       <span class="status-dot idle" id="statusDot"></span>
-      <span id="statusLabel">Connecting...</span>
+      <span id="statusLabel">Ready</span>
     </div>
 
     <button class="mic-button" id="micButton" onclick="toggleMic()">
@@ -159,247 +159,179 @@
 
     <div class="text-input-row">
       <input type="text" id="textInput" placeholder="Type a message..." autocomplete="off" disabled>
-      <button onclick="sendTextMessage()" id="sendBtn">Send</button>
+      <button onclick="sendText()">Send</button>
     </div>
 
     <div class="controls">
-      <button onclick="clearConversation()">Clear</button>
+      <button onclick="clearChat()">Clear</button>
     </div>
 
     <div class="voice-selector">
       Voice: <select id="voiceSelect"></select>
     </div>
 
-    <div class="hint">Tap mic to speak, or type. Press <kbd>Space</kbd> to toggle mic.</div>
-    <div id="tunnelStatus" class="tunnel-status checking">⬤ Checking connection...</div>
+    <div class="hint">Tap mic, press <kbd>Space</kbd>, or type</div>
+    <div id="connStatus" class="status-line checking">⬤ Checking backend...</div>
   </div>
 </div>
 
 <script>
-// ===== PIN =====
-const CORRECT_PIN = '4791';
+// ===== CONFIG =====
+// This gets used when loaded from GitHub Pages (cross-origin).
+// When loaded from the tunnel directly, it's ignored (same-origin).
+const GH_API = 'https://lrp-voice.loca.lt';
+const TUNNEL = window.location.hostname.includes('github.io') || window.location.hostname.includes('pages.dev');
+const API = TUNNEL ? GH_API : '';
 
-document.querySelectorAll('.pin-digit').forEach((input, idx, arr) => {
-  input.addEventListener('input', function() {
+// ===== PIN =====
+const PIN = '4791';
+const pinInputs = document.querySelectorAll('.pin-digit');
+pinInputs.forEach((el, i, arr) => {
+  el.addEventListener('input', function() {
     this.value = this.value.replace(/[^0-9]/g, '');
-    if (this.value) { this.classList.add('filled'); const next = arr[idx + 1]; if (next) setTimeout(() => next.focus(), 50); }
-    else { this.classList.remove('filled'); }
-    updateUnlockBtn();
+    if (this.value) { this.classList.add('filled'); if (arr[i+1]) arr[i+1].focus(); }
+    else this.classList.remove('filled');
+    document.getElementById('unlockBtn').disabled = getPin().length < 4;
   });
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Backspace' && !this.value && idx > 0) { arr[idx - 1].focus(); }
-    if (e.key === 'Enter') { checkPin(); }
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && !this.value && i > 0) arr[i-1].focus();
+    if (e.key === 'Enter') unlock();
   });
 });
-
-function getPinValue() { return Array.from(document.querySelectorAll('.pin-digit')).map(i => i.value).join(''); }
-function updateUnlockBtn() { document.getElementById('unlockBtn').disabled = getPinValue().length < 4; }
-
-function checkPin() {
-  const pin = getPinValue();
-  if (pin === CORRECT_PIN) {
-    document.getElementById('pinGate').style.display = 'none';
-    document.getElementById('mainUI').style.display = 'block';
-    document.getElementById('textInput').disabled = false;
-    document.getElementById('textInput').focus();
-    localStorage.setItem('lrp_voice_pin', 'verified');
-    checkBackend();
-  } else {
-    document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
-    document.querySelectorAll('.pin-digit').forEach(i => { i.value = ''; i.classList.remove('filled'); });
-    document.querySelector('.pin-digit[data-index="0"]').focus();
-    updateUnlockBtn();
+function getPin() { return Array.from(pinInputs).map(e => e.value).join(''); }
+function unlock() {
+  if (getPin() !== PIN) {
+    document.getElementById('pinError').textContent = 'Wrong PIN';
+    pinInputs.forEach(e => { e.value = ''; e.classList.remove('filled'); });
+    pinInputs[0].focus();
+    return;
   }
-}
-
-if (localStorage.getItem('lrp_voice_pin') === 'verified') {
+  localStorage.setItem('lrp_pin', 'ok');
   document.getElementById('pinGate').style.display = 'none';
   document.getElementById('mainUI').style.display = 'block';
   document.getElementById('textInput').disabled = false;
-  setTimeout(() => document.getElementById('textInput').focus(), 300);
-  setTimeout(checkBackend, 500);
+  document.getElementById('textInput').focus();
+  addMsg('assistant', "Hello Fahim! I'm your LeadRescuePro assistant. Tap the mic and speak, or type.");
+  setTimeout(() => setStatus('idle', 'Tap the mic or type'), 200);
+  checkConn();
 }
+if (localStorage.getItem('lrp_pin') === 'ok') { document.getElementById('pinGate').style.display = 'none'; document.getElementById('mainUI').style.display = 'block'; document.getElementById('textInput').disabled = false; checkConn(); }
 
-// ===== State =====
-let isListening = false, isProcessing = false, isSpeaking = false;
-let recognition = null, preferredVoice = '', voices = [];
-let speechSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+// ===== STATE =====
+let listening = false, processing = false, speaking = false;
+let recog = null, prefVoice = '', voiceList = [];
+const hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+const mb = document.getElementById('micButton'), sd = document.getElementById('statusDot'), sl = document.getElementById('statusLabel');
+const conv = document.getElementById('conversation'), vs = document.getElementById('voiceSelect'), ti = document.getElementById('textInput');
 
-const micButton = document.getElementById('micButton');
-const statusDot = document.getElementById('statusDot');
-const statusLabel = document.getElementById('statusLabel');
-const conversation = document.getElementById('conversation');
-const voiceSelect = document.getElementById('voiceSelect');
-const textInput = document.getElementById('textInput');
-
-// Update this if tunnel subdomain changes
-const API_BASE = 'https://lrp-voice.loca.lt';
-
-function setStatus(state, label) {
-  statusDot.className = 'status-dot ' + state;
-  micButton.className = 'mic-button';
-  statusLabel.textContent = label;
-  if (state === 'listening') micButton.classList.add('active');
-  else if (state === 'processing') micButton.classList.add('processing');
-  else if (state === 'speaking') micButton.classList.add('speaking');
+function setStatus(s, label) {
+  sd.className = 'status-dot ' + s; mb.className = 'mic-button'; sl.textContent = label;
+  listening = s === 'listening'; processing = s === 'processing'; speaking = s === 'speaking';
+  if (s === 'listening') mb.classList.add('active');
+  else if (s === 'processing') mb.classList.add('processing');
+  else if (s === 'speaking') mb.classList.add('speaking');
 }
-
-function addMessage(role, text) {
-  const div = document.createElement('div');
-  div.className = 'transcript-box';
-  div.innerHTML = '<div class="label">' + (role === 'user' ? 'You' : 'LeadRescuePro') + '</div><div class="text ' + role + '">' + escapeHtml(text) + '</div>';
-  conversation.appendChild(div);
-  conversation.scrollTop = conversation.scrollHeight;
+function escape(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function addMsg(role, text) {
+  const d = document.createElement('div'); d.className = 'transcript-box';
+  d.innerHTML = '<div class="label">' + (role === 'user' ? 'You' : 'LeadRescuePro') + '</div><div class="text ' + role + '">' + escape(text) + '</div>';
+  conv.appendChild(d); conv.scrollTop = conv.scrollHeight;
 }
+function clearChat() { conv.innerHTML = ''; addMsg('assistant', 'Cleared. Tap the mic or type.'); }
 
-function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
-function clearConversation() { conversation.innerHTML = ''; addMessage('assistant', 'Conversation cleared. Tap the mic or type to start.'); }
-
+// ===== VOICES =====
 function populateVoices() {
   if (typeof speechSynthesis === 'undefined') return;
-  voices = speechSynthesis.getVoices();
-  const current = voiceSelect.value;
-  voiceSelect.innerHTML = '<option value="">Auto</option>';
-  voices.forEach(v => { const opt = document.createElement('option'); opt.value = v.name; opt.textContent = v.name + ' (' + v.lang + ')'; voiceSelect.appendChild(opt); });
-  voiceSelect.value = current;
+  voiceList = speechSynthesis.getVoices();
+  const cur = vs.value; vs.innerHTML = '<option value="">Auto</option>';
+  voiceList.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name + ' (' + v.lang + ')'; vs.appendChild(o); });
+  vs.value = cur;
 }
-if (typeof speechSynthesis !== 'undefined') {
-  speechSynthesis.onvoiceschanged = populateVoices;
-  setTimeout(populateVoices, 500);
-}
-voiceSelect.addEventListener('change', function() { preferredVoice = this.value; });
+if (typeof speechSynthesis !== 'undefined') { speechSynthesis.onvoiceschanged = populateVoices; setTimeout(populateVoices, 500); }
+vs.addEventListener('change', function() { prefVoice = this.value; });
 
+// ===== SPEAK =====
 function speak(text) {
-  return new Promise((resolve) => {
-    if (!text || text.trim().length === 0 || typeof speechSynthesis === 'undefined') { setStatus('idle', 'Tap the mic or type'); resolve(); return; }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text); utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = 1.0;
-    if (preferredVoice) { const found = voices.find(v => v.name === preferredVoice); if (found) utterance.voice = found; }
+  return new Promise(r => {
+    if (!text || !speechSynthesis) { setStatus('idle', 'Tap the mic or type'); r(); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.pitch = 1.0;
+    if (prefVoice) { const f = voiceList.find(v => v.name === prefVoice); if (f) u.voice = f; }
     setStatus('speaking', 'Speaking...');
-    utterance.onend = () => { setStatus('idle', 'Tap the mic or type'); resolve(); };
-    utterance.onerror = () => { setStatus('idle', 'Tap the mic or type'); resolve(); };
-    speechSynthesis.speak(utterance);
+    u.onend = () => { setStatus('idle', 'Tap the mic or type'); r(); };
+    u.onerror = () => { setStatus('idle', 'Tap the mic or type'); r(); };
+    speechSynthesis.speak(u);
   });
 }
 
-// ===== Check backend health =====
-async function checkBackend() {
-  const ts = document.getElementById('tunnelStatus');
-  ts.className = 'tunnel-status checking';
-  ts.textContent = '⬤ Checking connection...';
+// ===== CHECK CONNECTION =====
+async function checkConn() {
+  const cs = document.getElementById('connStatus'); cs.className = 'status-line checking'; cs.textContent = '⬤ Checking backend...';
   try {
-    const resp = await fetch(API_BASE + '/health', { method: 'GET', mode: 'cors' });
-    const data = await resp.json();
-    if (data.status === 'ok') {
-      ts.className = 'tunnel-status online';
-      ts.textContent = '⬤ Connected';
-    } else {
-      ts.className = 'tunnel-status offline';
-      ts.textContent = '⬤ Backend offline';
-    }
-  } catch (e) {
-    ts.className = 'tunnel-status offline';
-    ts.textContent = '⬤ Backend offline';
-  }
+    const ep = TUNNEL ? GH_API + '/health' : '/health';
+    const r = await fetch(ep); const d = await r.json();
+    if (d.status === 'ok') { cs.className = 'status-line online'; cs.textContent = '⬤ Connected'; }
+    else throw 'bad';
+  } catch(e) { cs.className = 'status-line offline'; cs.textContent = '⬤ Backend offline — try the direct tunnel URL'; }
 }
 
-// ===== Send to Hermes with retry =====
-async function sendToHermes(text, retries = 2) {
+// ===== API CALL =====
+async function callAPI(text, tries = 2) {
   setStatus('processing', 'Thinking...');
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  const ep = (TUNNEL ? GH_API : '') + '/api/chat';
+  for (let i = 0; i <= tries; i++) {
     try {
-      const resp = await fetch(API_BASE + '/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, session_id: getSessionId() })
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-      return data.response;
-    } catch (e) {
-      console.error('API error (attempt', attempt + 1, '):', e);
-      if (attempt < retries) {
-        await new Promise(r => setTimeout(r, 1500));
-        setStatus('processing', 'Retrying...');
-      }
+      const r = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, session_id: getSID() }) });
+      if (!r.ok) throw 'HTTP ' + r.status;
+      const d = await r.json(); return d.response;
+    } catch(e) {
+      if (i < tries) { await new Promise(r => setTimeout(r, 1500)); setStatus('processing', 'Retrying...'); }
     }
   }
-  document.getElementById('tunnelStatus').className = 'tunnel-status offline';
-  document.getElementById('tunnelStatus').textContent = '⬤ Backend offline';
-  return "I'm temporarily disconnected. I've noted your message and will respond as soon as I reconnect. Try again in a moment.";
+  document.getElementById('connStatus').className = 'status-line offline';
+  document.getElementById('connStatus').textContent = '⬤ Backend offline';
+  return "Backend is offline. Try the direct tunnel URL instead: https://lrp-voice.loca.lt";
 }
-
-function getSessionId() {
-  let sid = localStorage.getItem('lrp_voice_session');
-  if (!sid) { sid = 'voice_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('lrp_voice_session', sid); }
-  return sid;
-}
+function getSID() { let s = localStorage.getItem('lrp_sid'); if (!s) { s = 'v_' + Date.now(); localStorage.setItem('lrp_sid', s); } return s; }
 
 async function processAndSpeak(text) {
-  const response = await sendToHermes(text);
-  addMessage('assistant', response);
-  if (!response.includes("disconnected")) {
-    document.getElementById('tunnelStatus').className = 'tunnel-status online';
-    document.getElementById('tunnelStatus').textContent = '⬤ Connected';
-  }
-  await speak(response);
+  const resp = await callAPI(text);
+  addMsg('assistant', resp);
+  if (!resp.includes('offline')) { document.getElementById('connStatus').className = 'status-line online'; document.getElementById('connStatus').textContent = '⬤ Connected'; }
+  await speak(resp);
 }
 
-function sendTextMessage() {
-  if (isProcessing || isSpeaking) return;
-  const text = textInput.value.trim();
-  if (!text) return;
-  textInput.value = '';
-  addMessage('user', text);
-  processAndSpeak(text);
+// ===== TEXT =====
+function sendText() {
+  if (processing || speaking) return;
+  const t = ti.value.trim(); if (!t) return;
+  ti.value = ''; addMsg('user', t); processAndSpeak(t);
 }
-textInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendTextMessage(); });
+ti.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendText(); });
 
+// ===== MIC =====
 function toggleMic() {
-  if (isListening) { stopListening(); }
-  else if (isProcessing || isSpeaking) { return; }
-  else { startListening(); }
+  if (listening) { stopMic(); } else if (!processing && !speaking) { startMic(); }
 }
-
-function startListening() {
-  if (!speechSupported) {
-    setStatus('error', 'Voice not supported in this browser. Type instead.');
-    setTimeout(() => setStatus('idle', 'Type your message'), 2000);
-    textInput.focus(); return;
-  }
+function startMic() {
+  if (!hasSpeech) { setStatus('error', 'Voice not supported'); setTimeout(() => setStatus('idle', 'Type instead'), 2000); ti.focus(); return; }
   try {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR();
-    recognition.continuous = false; recognition.interimResults = false; recognition.lang = 'en-US';
-    recognition.onresult = function(event) { const text = event.results[0][0].transcript; addMessage('user', text); processAndSpeak(text); };
-    recognition.onerror = function(event) {
-      if (event.error === 'not-allowed') { setStatus('error', 'Microphone blocked. Allow mic in browser settings.'); }
-      else if (event.error === 'no-speech') { setStatus('idle', 'Tap the mic or type'); }
-      else { setStatus('error', 'Error: ' + event.error); }
-      setTimeout(function() { if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type'); }, 2000);
+    recog = new SR(); recog.continuous = false; recog.interimResults = false; recog.lang = 'en-US';
+    recog.onresult = function(e) { const t = e.results[0][0].transcript; addMsg('user', t); processAndSpeak(t); };
+    recog.onerror = function(e) {
+      if (e.error === 'not-allowed') setStatus('error', 'Mic blocked');
+      else if (e.error === 'no-speech') setStatus('idle', 'Tap the mic or type');
+      else setStatus('error', e.error);
+      setTimeout(() => { if (!processing && !speaking) setStatus('idle', 'Tap the mic or type'); }, 2000);
     };
-    recognition.onend = function() { if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type'); };
-    recognition.start(); isListening = true;
-    setStatus('listening', 'Listening...');
-  } catch (e) {
-    setStatus('error', 'Could not start mic. Use text input.');
-    setTimeout(function() { setStatus('idle', 'Type your message'); }, 2000);
-  }
+    recog.onend = function() { if (!processing && !speaking) setStatus('idle', 'Tap the mic or type'); };
+    recog.start(); setStatus('listening', 'Listening...');
+  } catch(e) { setStatus('error', 'Mic error'); setTimeout(() => setStatus('idle', 'Type'), 2000); }
 }
-function stopListening() {
-  isListening = false;
-  if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
-  if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type');
-}
+function stopMic() { if (recog) { try { recog.stop(); } catch(e) {} recog = null; } if (!processing && !speaking) setStatus('idle', 'Tap the mic or type'); }
 
-document.addEventListener('keydown', function(e) {
-  if (e.target.tagName === 'INPUT') return;
-  if (e.code === 'Space') { e.preventDefault(); toggleMic(); }
-});
-
-// ===== Init =====
-addMessage('assistant', "Hello Fahim! I'm your LeadRescuePro voice assistant. Tap the microphone and speak, or type below.");
-setTimeout(function() { setStatus('idle', 'Tap the mic or type'); }, 300);
+document.addEventListener('keydown', function(e) { if (e.target.tagName !== 'INPUT' && e.code === 'Space') { e.preventDefault(); toggleMic(); } });
 </script>
 </body>
 </html>
