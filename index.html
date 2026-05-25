@@ -208,7 +208,7 @@
    208|  pg.style.display='none';mu.style.display='block';
    209|  document.getElementById('ti').disabled=false;
    210|  setTimeout(function(){document.getElementById('ti').focus();},200);
-   211|  addMsg('h','Hello Fahim! Tap the mic or type below.');
+   211|  addMsg('h','Hi! Tap the mic or type below.');
    212|  setSt('i','Tap the mic or type');
    213|  // Don't block UI on backend check — try silently
    214|  checkB();
@@ -413,7 +413,7 @@
    413|    window._rtWs=new WebSocket(wsUrl);
    414|    window._rtWs.onopen=function(){
    415|      cs.className='sl ok';cs.textContent='⬤ Real-Time';
-   416|      addMsg('h','Real-Time mode active. Hold mic button to talk, release when done.');
+   416|      addMsg('h','Hi! Hold mic to talk, release when done.');
    417|      // Switch mic behavior to hold-to-talk
    418|      setupRTHoldToTalk();
    419|    };
