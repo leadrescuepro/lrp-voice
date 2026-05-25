@@ -1,0 +1,9 @@
+{
+  "name": "lrp-voice",
+  "version": "1.0.0",
+  "description": "LeadRescuePro Voice Assistant",
+  "main": "_worker.js",
+  "scripts": {
+    "deploy": "npx wrangler pages deploy . --project-name lrp-voice"
+  }
+}
