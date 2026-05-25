@@ -9,37 +9,39 @@
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:#0a0e17;color:#c8d6e5;
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
+  min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px
 }
-.container{max-width:480px;width:100%;text-align:center}
-.header{margin-bottom:32px}
-.header h1{font-size:22px;font-weight:700;color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,0.15);letter-spacing:1px}
-.header p{font-size:13px;color:#5a7a9a;margin-top:4px}
+.container{max-width:440px;width:100%;margin:auto}
 
+/* PIN Gate */
 #pg{
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
-  border:1px solid #1a2a44;border-radius:16px;padding:40px 24px
+  background:linear-gradient(135deg,#11192e,#0f1629);
+  border:1px solid #1a2a44;border-radius:16px;padding:40px 20px
 }
-#pg .lk{font-size:48px;margin-bottom:16px}
-#pg h2{font-size:18px;color:#00d4ff;margin-bottom:8px}
-#pg p{font-size:13px;color:#5a7a9a;margin-bottom:24px}
-.pg{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+#pg .lk{font-size:48px;margin-bottom:12px}
+#pg h2{font-size:20px;color:#00d4ff;margin-bottom:6px}
+#pg p{font-size:14px;color:#5a7a9a;margin-bottom:24px}
+.pg{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
 .pg input{
-  width:52px;height:60px;text-align:center;
-  background:#0a0e17;border:2px solid #1a2a44;border-radius:8px;
-  color:#00d4ff;font-size:26px;font-weight:700;
-  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none
+  width:56px;height:64px;text-align:center;
+  background:#0a0e17;border:2px solid #1a2a44;border-radius:10px;
+  color:#00d4ff;font-size:28px;font-weight:700;
+  outline:none;caret-color:#00d4ff
 }
 .pg input:focus{border-color:#00d4ff}
 .pg input.f{border-color:#2ed573}
-.pe{color:#ff4757;font-size:13px;min-height:20px;margin-bottom:4px}
+.pe{color:#ff4757;font-size:13px;min-height:20px;margin-bottom:6px}
 #pg button{
-  padding:14px 48px;background:linear-gradient(135deg,#00d4ff 0%,#0088cc 100%);
-  border:none;border-radius:8px;color:#fff;font-weight:700;
-  font-size:16px;cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent
+  width:100%;max-width:240px;padding:14px 0;
+  background:linear-gradient(135deg,#00d4ff,#0088cc);
+  border:none;border-radius:10px;color:#fff;font-weight:700;
+  font-size:16px;cursor:pointer
 }
 #main{display:none}
-.sd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+/* Status dot */
+.st{font-size:14px;color:#5a7a9a;margin:8px 0 16px;min-height:22px;display:flex;align-items:center;justify-content:center;gap:6px}
+.sd{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .sd.i{background:#5a7a9a}
 .sd.ls{background:#00d4ff;animation:pl 1.5s infinite}
 .sd.pr{background:#ffa502}
@@ -47,15 +49,16 @@ body{
 .sd.er{background:#ff4757}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
 
+/* Mic button */
 .mb{
-  width:130px;height:130px;border-radius:50%;
+  width:130px;height:130px;border-radius:50%;margin:16px auto;
   border:3px solid #1a2a44;
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+  background:linear-gradient(135deg,#11192e,#0f1629);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
-  margin:24px auto;transition:all .3s;position:relative;
-  box-shadow:0 0 30px rgba(0,212,255,.05);-webkit-tap-highlight-color:transparent
+  transition:all .3s;position:relative;
+  -webkit-tap-highlight-color:transparent
 }
-.mb svg{width:52px;height:52px;fill:#5a7a9a;transition:fill .3s}
+.mb svg{width:52px;height:52px;fill:#5a7a9a}
 .mb.ac{border-color:#00d4ff;box-shadow:0 0 50px rgba(0,212,255,.25);animation:br 1.5s ease-in-out infinite}
 .mb.ac svg{fill:#00d4ff}
 .mb.pr{border-color:#ffa502}
@@ -64,48 +67,53 @@ body{
 .mb.sp svg{fill:#2ed573}
 @keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-.st{font-size:14px;color:#5a7a9a;margin:8px 0 24px;min-height:20px}
-.ms{
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
-  border:1px solid #1a2a44;border-radius:12px;padding:16px;
-  margin-bottom:12px;min-height:50px;text-align:left;font-size:14px;line-height:1.6
-}
-.ms .lb{font-size:11px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.ms .tx.u{color:#00d4ff}
-.ms .tx.h{color:#2ed573}
-.cv{max-height:320px;overflow-y:auto;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:#1a2a44 transparent}
+/* Chat area */
+.cv{max-height:320px;overflow-y:auto;margin-bottom:12px}
 .cv::-webkit-scrollbar{width:4px}
 .cv::-webkit-scrollbar-thumb{background:#1a2a44;border-radius:2px}
-.cl{display:flex;gap:12px;justify-content:center;margin-top:16px}
-.cl button{
-  padding:10px 20px;border-radius:8px;border:1px solid #1a2a44;
-  background:#11192e;color:#5a7a9a;font-size:13px;cursor:pointer;transition:all .2s
+.ms{
+  background:linear-gradient(135deg,#11192e,#0f1629);
+  border:1px solid #1a2a44;border-radius:12px;padding:14px;
+  margin-bottom:10px;text-align:left;font-size:14px;line-height:1.6
 }
-.tr{display:flex;gap:8px;margin-top:12px}
+.ms .lb{font-size:11px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.ms .tx.u{color:#00d4ff}
+.ms .tx.h{color:#2ed573}
+
+/* Input row */
+.tr{display:flex;gap:8px;margin-top:8px}
 .tr input{
-  flex:1;padding:12px 16px;background:#11192e;border:1px solid #1a2a44;
-  border-radius:8px;color:#c8d6e5;font-size:14px;outline:none
+  flex:1;min-width:0;padding:14px 16px;
+  background:#11192e;border:1px solid #1a2a44;border-radius:10px;
+  color:#c8d6e5;font-size:16px;outline:none
 }
 .tr input:focus{border-color:#00d4ff}
 .tr button{
-  padding:12px 24px;background:#1a3a5a;border:1px solid #2a4a6a;
-  border-radius:8px;color:#00d4ff;font-weight:600;cursor:pointer
+  padding:14px 24px;background:#1a3a5a;border:1px solid #2a4a6a;
+  border-radius:10px;color:#00d4ff;font-weight:600;font-size:15px;cursor:pointer;
+  white-space:nowrap
 }
-.ht{font-size:12px;color:#3a4a5a;margin-top:16px}
-.sl{font-size:11px;margin-top:20px}
+.ht{font-size:12px;color:#3a4a5a;margin-top:12px}
+.sl{font-size:11px;margin-top:16px}
 .sl.ok{color:#2ed573}
 .sl.no{color:#ff4757}
 .sl.ch{color:#ffa502}
+
+/* Button row */
+.cl{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.cl button{
+  padding:10px 18px;border-radius:8px;border:1px solid #1a2a44;
+  background:#11192e;color:#5a7a9a;font-size:13px;cursor:pointer
+}
+.cl button.on{border-color:#00d4ff;color:#00d4ff}
+.cl button.rt{border-color:#2ed573;color:#2ed573}
+
 audio{display:none}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1>LeadRescuePro</h1>
-    <p>Voice Assistant</p>
-  </div>
-
+  <!-- PIN Gate -->
   <div id="pg">
     <div class="lk">🔒</div>
     <h2>Access Required</h2>
@@ -120,6 +128,7 @@ audio{display:none}
     <button id="ub">Unlock</button>
   </div>
 
+  <!-- Main UI -->
   <div id="main">
     <div class="st">
       <span class="sd i" id="dot"></span>
@@ -130,6 +139,12 @@ audio{display:none}
       <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
     </button>
 
+    <div class="cl">
+      <button id="cb">Clear</button>
+      <button id="smartToggle">🧠 Smart</button>
+      <button id="rtToggle" class="rt">🔴 Real-Time</button>
+    </div>
+
     <div class="cv" id="cv"></div>
 
     <div class="tr">
@@ -137,14 +152,7 @@ audio{display:none}
       <button id="sb">Send</button>
     </div>
 
-    <div class="cl">
-      <button id="cb">Clear</button>
-      <button id="smartToggle">🧠 Smart</button>
-      <button id="rtToggle" style="border-color:#2ed573">🔴 Real-Time</button>
-    </div>
-
-    <div class="ht">Tap the mic and speak, or type below</div>
-    <div id="modeIndicator" class="sl ch" style="font-size:10px;color:#5a7a9a;margin-top:4px">⚡ Browser STT</div>
+    <div class="ht" id="modeIndicator">⚡ Browser STT</div>
     <div class="sl" id="cs">⬤ Connecting...</div>
   </div>
 
@@ -158,13 +166,10 @@ var P='4791',pg=document.getElementById('pg'),mu=document.getElementById('main')
 var pe=document.getElementById('pe'),ub=document.getElementById('ub');
 var pis=document.querySelectorAll('.pd'),cs=document.getElementById('cs');
 
-// Check stored PIN or URL param
 var params=new URLSearchParams(window.location.search);
 if(localStorage.getItem('p')==='ok'||params.get('p')==='4791'){
   localStorage.setItem('p','ok');boot();
-}else{
-  setupPin();
-}
+}else{setupPin();}
 
 function gv(){
   var v='';
@@ -207,14 +212,11 @@ function unlock(){
 function boot(){
   pg.style.display='none';mu.style.display='block';
   document.getElementById('ti').disabled=false;
-  setTimeout(function(){document.getElementById('ti').focus();},200);
-  addMsg('h','Hi! Tap the mic or type below.');
-  setSt('i','Tap the mic or type');
-  // Don't block UI on backend check — try silently
+  addMsg('h','Hi! Tap the mic or type.');
+  setSt('i','Ready');
   checkB();
 }
 
-// Short IDs
 function $(id){return document.getElementById(id);}
 var dot=$('dot'),lbl=$('lbl'),mb=$('mic'),cv=$('cv'),ti=$('ti');
 var ls=false,pr=false,sp=false,rc=null;
@@ -237,16 +239,15 @@ function esc(s){var d=document.createElement('div');d.textContent=s;return d.inn
 
 function addMsg(r,t){
   var d=document.createElement('div');d.className='ms';
-  var w=r==='u'?'You':'LeadRescuePro';
+  var w=r==='u'?'You':'Assistant';
   var c=r==='u'?'u':'h';
   d.innerHTML='<div class="lb">'+w+'</div><div class="tx '+c+'">'+esc(t)+'</div>';
   cv.appendChild(d);cv.scrollTop=cv.scrollHeight;
 }
 
-// TTS — backend generates real audio
 function spk(t){
   return new Promise(function(r){
-    if(!t){setSt('i','Tap the mic or type');r();return;}
+    if(!t){setSt('i','Ready');r();return;}
     setSt('sp','Speaking...');
     var x=new XMLHttpRequest();
     x.open('POST',B+'/api/tts?_='+Date.now(),true);
@@ -255,19 +256,18 @@ function spk(t){
     x.responseType='json';
     x.onload=function(){
       if(x.status===200&&x.response&&x.response.audio_url){
-        var u=(xo?'https://lrp-voice.loca.lt':'')+x.response.audio_url;
+        var u=window.location.origin+x.response.audio_url;
         ap.src=u;
-        ap.onended=function(){setSt('i','Tap the mic or type');r();};
-        ap.onerror=function(){setSt('i','Tap the mic or type');r();};
-        ap.play().catch(function(){setSt('i','Tap the mic or type');r();});
-      }else{setSt('i','Tap the mic or type');r();}
+        ap.onended=function(){setSt('i','Ready');r();};
+        ap.onerror=function(){setSt('i','Ready');r();};
+        ap.play().catch(function(){setSt('i','Ready');r();});
+      }else{setSt('i','Ready');r();}
     };
-    x.onerror=function(){setSt('i','Tap the mic or type');r();};
+    x.onerror=function(){setSt('i','Ready');r();};
     x.send(JSON.stringify({text:t}));
   });
 }
 
-// Silent backend check — doesn't block UI
 async function checkB(){
   cs.className='sl ch';cs.textContent='⬤ Connecting...';
   try{
@@ -278,12 +278,10 @@ async function checkB(){
       if(d&&d.status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
     }
   }catch(e){}
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
-  // Retry silently every 10 seconds
+  cs.className='sl no';cs.textContent='⬤ Offline';
   setTimeout(checkB,10000);
 }
 
-// API call with retry
 async function api(t){
   setSt('pr','Thinking...');
   var u=B+'/api/chat?_='+Date.now();
@@ -301,9 +299,9 @@ async function api(t){
       if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
     }
   }
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
+  cs.className='sl no';cs.textContent='⬤ Offline';
   setTimeout(checkB,10000);
-  return "Backend offline. Please try again.";
+  return "Backend offline. Try again.";
 }
 
 async function pns(t){
@@ -312,24 +310,18 @@ async function pns(t){
   if(r.indexOf('offline')===-1)await spk(r);
 }
 
-// Text
 function stx(){
   if(pr||sp)return;
   var t=ti.value.trim();if(!t)return;
   ti.value='';addMsg('u',t);pns(t);
 }
 
-// Mic
 function tm(){if(ls){sm();}else if(!pr&&!sp){stm();}}
 
 function stm(){
-  if(!hs){setSt('er','Voice input not supported');setTimeout(function(){setSt('i','Type instead');},2000);ti.focus();return;}
+  if(!hs){setSt('er','Voice not supported');setTimeout(function(){setSt('i','Type');},2000);ti.focus();return;}
   try{
-    // Check if smart transcription mode is active
-    if(window._smartMode){
-      stmSmart();
-      return;
-    }
+    if(window._smartMode){stmSmart();return;}
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     rc=new SR();rc.continuous=false;rc.interimResults=false;rc.lang='en-US';
     rc.onresult=function(e){var t=e.results[0][0].transcript;addMsg('u',t);pns(t);};
@@ -337,14 +329,13 @@ function stm(){
       if(e.error==='not-allowed')setSt('er','Mic blocked');
       else if(e.error==='no-speech'){}
       else setSt('er',e.error);
-      setTimeout(function(){if(!pr&&!sp)setSt('i','Tap mic or type');},2000);
+      setTimeout(function(){if(!pr&&!sp)setSt('i','Ready');},2000);
     };
-    rc.onend=function(){if(!pr&&!sp)setSt('i','Tap mic or type');};
+    rc.onend=function(){if(!pr&&!sp)setSt('i','Ready');};
     rc.start();setSt('ls','Listening...');
   }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
 }
 
-// Smart transcription: record audio → send to backend for Whisper+DeepSeek
 var _mediaRecorder=null,_audioChunks=[],_smartStream=null;
 function stmSmart(){
   setSt('ls','Listening...');
@@ -368,14 +359,13 @@ function stmSmart(){
           if(xhr.status===200&&xhr.response){
             var t=xhr.response.transcript||xhr.response.whisper_raw||'';
             if(t){addMsg('u',t);pns(t);}
-            else{setSt('i','Tap mic or type');}
-          }else{setSt('i','Tap mic or type');}
+            else{setSt('i','Ready');}
+          }else{setSt('i','Ready');}
         };
-        xhr.onerror=function(){setSt('i','Tap mic or type');};
+        xhr.onerror=function(){setSt('i','Ready');};
         xhr.send(fd);
       };
       _mediaRecorder.start();
-      // Auto-stop after 10 seconds of silence
       setTimeout(function(){if(_mediaRecorder&&_mediaRecorder.state==='recording')_mediaRecorder.stop();},10000);
     }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Type');},2000);});
   }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
@@ -383,69 +373,16 @@ function stmSmart(){
 
 function sm(){
   if(_mediaRecorder&&_mediaRecorder.state==='recording'){_mediaRecorder.stop();_mediaRecorder=null;return;}
-  if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');
+  if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Ready');
 }
 
-// Events
-mb.addEventListener('click',function(e){e.preventDefault();tm();});
-mb.addEventListener('touchend',function(e){e.preventDefault();tm();});
-document.getElementById('sb').addEventListener('click',function(e){e.preventDefault();stx();});
-ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
-document.getElementById('cb').addEventListener('click',function(e){
-  e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
-});
-document.getElementById('smartToggle').addEventListener('click',function(e){
-  e.preventDefault();
-  window._smartMode=!window._smartMode;
-  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
-  this.style.borderColor=window._smartMode?'#00d4ff':'';
-  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription (Whisper+DeepSeek)':'⚡ Browser STT';
-});
-document.getElementById('rtToggle').addEventListener('click',function(e){
-  e.preventDefault();
-  window._rtMode=!window._rtMode;
-  this.textContent=window._rtMode?'🟢 Real-Time ON':'🔴 Real-Time';
-  this.style.borderColor=window._rtMode?'#2ed573':'';
-  if(window._rtMode){
-    document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice (WebSocket streaming)';
-    // Open real-time WebSocket connection to v2 audio agent
-    var wsUrl=window.location.origin.replace('http','ws')+'/v2/ws';
-    window._rtWs=new WebSocket(wsUrl);
-    window._rtWs.onopen=function(){
-      cs.className='sl ok';cs.textContent='⬤ Real-Time';
-      addMsg('h','Hi! Hold mic to talk, release when done.');
-      // Switch mic behavior to hold-to-talk
-      setupRTHoldToTalk();
-    };
-    window._rtWs.onerror=function(){
-      addMsg('h','Real-Time unavailable. Switch back to normal mode.');
-      window._rtMode=false;
-      document.getElementById('rtToggle').textContent='🔴 Real-Time';
-      document.getElementById('rtToggle').style.borderColor='';
-      document.getElementById('modeIndicator').textContent='⚡ Browser STT';
-    };
-    window._rtWs.onclose=function(){
-      if(window._rtMode){
-        cs.className='sl no';cs.textContent='⬤ Disconnected';
-      }
-      window._rtWs=null;
-    };
-  }else{
-    if(window._rtWs){window._rtWs.close();window._rtWs=null;}
-    // Restore normal mic behavior — page reload is simplest
-    document.getElementById('modeIndicator').textContent='⚡ Browser STT';
-    location.reload();
-  }
-});
-// Real-Time hold-to-talk recording
+// Real-Time hold-to-talk
 var _rtRecorder=null,_rtStream=null,_rtChunks=[];
 function setupRTHoldToTalk(){
-  var mbOrig=document.getElementById('mic');
-  if(!mbOrig)return;
-  // Replace mic behavior
-  mbOrig.replaceWith(mbOrig.cloneNode(true));
   var mb2=document.getElementById('mic');
-  // Clear old listeners — use new var
+  if(!mb2)return;
+  mb2.replaceWith(mb2.cloneNode(true));
+  var mb3=document.getElementById('mic');
   function startRT(){
     if(!window._rtWs||window._rtWs.readyState!==1){setSt('er','Not connected');return;}
     _rtChunks=[];
@@ -458,58 +395,99 @@ function setupRTHoldToTalk(){
         _rtStream.getTracks().forEach(function(t){t.stop();});
         if(_rtChunks.length>0){
           var blob=new Blob(_rtChunks,{type:'audio/webm'});
-          sendRT(blob);
+          var reader=new FileReader();
+          reader.onload=function(){
+            if(window._rtWs&&window._rtWs.readyState===1){
+              window._rtWs.send(JSON.stringify({type:'transcribe',audio:reader.result.split(',')[1],format:'webm'}));
+            }
+          };
+          reader.readAsDataURL(blob);
         }else{setSt('i','Hold to talk');}
       };
       _rtRecorder.start();
       setSt('ls','Listening...');
-    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Hold');},2000);});
+    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Ready');},2000);});
   }
   function stopRT(){
     if(_rtRecorder&&_rtRecorder.state==='recording'){_rtRecorder.stop();_rtRecorder=null;}
   }
-  function sendRT(blob){
-    setSt('pr','Sending...');
-    var reader=new FileReader();
-    reader.onload=function(){
-      if(window._rtWs&&window._rtWs.readyState===1){
-        window._rtWs.send(JSON.stringify({type:'transcribe',audio:reader.result.split(',')[1],format:'webm'}));
-      }
+  mb3.addEventListener('mousedown',function(e){e.preventDefault();startRT();});
+  mb3.addEventListener('mouseup',function(e){e.preventDefault();stopRT();});
+  mb3.addEventListener('mouseleave',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
+  mb3.addEventListener('touchstart',function(e){e.preventDefault();startRT();});
+  mb3.addEventListener('touchend',function(e){e.preventDefault();stopRT();});
+  mb3.addEventListener('touchcancel',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
+  if(window._rtWs){
+    window._rtWs.onmessage=function(e){
+      try{
+        var msg=JSON.parse(e.data);
+        if(msg.type==='transcript'){addMsg('u',msg.text);}
+        else if(msg.type==='reply'){addMsg('h',msg.text);}
+        else if(msg.type==='tts'){
+          var ap2=document.getElementById('ap');
+          if(ap2){
+            ap2.src=window.location.origin+msg.url;
+            ap2.onended=function(){setSt('i','Hold to talk');};
+            ap2.play().catch(function(){setSt('i','Hold to talk');});
+          }else{setSt('i','Hold to talk');}
+          setSt('sp','Speaking...');
+        }else if(msg.type==='state'){
+          if(msg.status==='thinking')setSt('pr','Thinking...');
+          else if(msg.status==='done')setSt('i','Hold to talk');
+        }
+      }catch(e){}
     };
-    reader.readAsDataURL(blob);
   }
-  // Set event listeners on the new element
-  mb2.addEventListener('mousedown',function(e){e.preventDefault();startRT();});
-  mb2.addEventListener('mouseup',function(e){e.preventDefault();stopRT();});
-  mb2.addEventListener('mouseleave',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
-  mb2.addEventListener('touchstart',function(e){e.preventDefault();startRT();});
-  mb2.addEventListener('touchend',function(e){e.preventDefault();stopRT();});
-  mb2.addEventListener('touchcancel',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
-  // Also listen for audio responses
-  window._rtWs.onmessage=function(e){
-    try{
-      var msg=JSON.parse(e.data);
-      if(msg.type==='transcript'){
-        addMsg('u',msg.text);
-      }else if(msg.type==='reply'){
-        addMsg('h',msg.text);
-        setSt('pr','Got reply');
-      }else if(msg.type==='tts'){
-        var ap=document.getElementById('ap');
-        if(ap){
-          ap.src=window.location.origin+msg.url;
-          ap.onended=function(){setSt('i','Hold to talk');};
-          ap.play().catch(function(){setSt('i','Hold to talk');});
-        }else{setSt('i','Hold to talk');}
-        setSt('sp','Speaking...');
-      }else if(msg.type==='state'){
-        if(msg.status==='thinking')setSt('th','Thinking...');
-        else if(msg.status==='done')setSt('i','Hold to talk');
-      }
-    }catch(e){}
-  };
 }
 
+// Event listeners
+mb.addEventListener('click',function(e){e.preventDefault();tm();});
+mb.addEventListener('touchend',function(e){e.preventDefault();tm();});
+document.getElementById('sb').addEventListener('click',function(e){e.preventDefault();stx();});
+ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
+document.getElementById('cb').addEventListener('click',function(e){
+  e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
+});
+document.getElementById('smartToggle').addEventListener('click',function(e){
+  e.preventDefault();
+  window._smartMode=!window._smartMode;
+  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
+  this.className=window._smartMode?'on':'';
+  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription':'⚡ Browser STT';
+});
+document.getElementById('rtToggle').addEventListener('click',function(e){
+  e.preventDefault();
+  window._rtMode=!window._rtMode;
+  this.textContent=window._rtMode?'🟢 Real-Time ON':'🔴 Real-Time';
+  this.className=window._rtMode?'rt on':'rt';
+  if(window._rtMode){
+    document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice';
+    var wsUrl=window.location.origin.replace('http','ws')+'/v2/ws';
+    window._rtWs=new WebSocket(wsUrl);
+    window._rtWs.onopen=function(){
+      cs.className='sl ok';cs.textContent='⬤ Real-Time';
+      addMsg('h','Hi! Hold mic to talk, release when done.');
+      setupRTHoldToTalk();
+    };
+    window._rtWs.onerror=function(){
+      addMsg('h','Real-Time unavailable.');
+      window._rtMode=false;
+      document.getElementById('rtToggle').textContent='🔴 Real-Time';
+      document.getElementById('rtToggle').className='rt';
+      document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+    };
+    window._rtWs.onclose=function(){
+      if(window._rtMode){
+        cs.className='sl no';cs.textContent='⬤ Disconnected';
+      }
+      window._rtWs=null;
+    };
+  }else{
+    if(window._rtWs){window._rtWs.close();window._rtWs=null;}
+    document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+    location.reload();
+  }
+});
 document.addEventListener('keydown',function(e){
   if(e.target.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();tm();}
 });
