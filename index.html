@@ -142,7 +142,7 @@
       <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="3">
     </div>
     <div class="pin-error" id="pinError"></div>
-    <button id="unlockBtn" disabled onclick="unlock()">Unlock</button>
+    <button id="unlockBtn" onclick="unlock()">Unlock</button>
   </div>
 
   <div id="mainUI">
@@ -199,7 +199,8 @@ const PIN = '4791';
       this.value = this.value.replace(/[^0-9]/g, '');
       if (this.value) { this.classList.add('filled'); if (arr[i+1]) setTimeout(() => arr[i+1].focus(), 50); }
       else this.classList.remove('filled');
-      document.getElementById('unlockBtn').disabled = getPinVal().length < 4;
+      // Auto-unlock when all 4 digits typed
+      if (getPinVal().length === 4) unlock();
     });
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Backspace' && !this.value && i > 0) arr[i-1].focus();
