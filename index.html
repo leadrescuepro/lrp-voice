@@ -3,107 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LeadRescuePro Voice v5</title>
+<title>LeadRescuePro Voice</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0a0e17; color: #c8d6e5;
-  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:#0a0e17;color:#c8d6e5;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
 }
-.container { max-width: 480px; width: 100%; text-align: center; }
-.header { margin-bottom: 32px; }
-.header h1 { font-size: 22px; font-weight: 700; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.15); letter-spacing: 1px; }
-.header p { font-size: 13px; color: #5a7a9a; margin-top: 4px; }
+.container{max-width:480px;width:100%;text-align:center}
+.header{margin-bottom:32px}
+.header h1{font-size:22px;font-weight:700;color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,0.15);letter-spacing:1px}
+.header p{font-size:13px;color:#5a7a9a;margin-top:4px}
 
-#pinGate {
-  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-  border: 1px solid #1a2a44; border-radius: 16px; padding: 40px 24px;
+#pg{
+  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+  border:1px solid #1a2a44;border-radius:16px;padding:40px 24px
 }
-#pinGate .lock-icon { font-size: 48px; margin-bottom: 16px; }
-#pinGate h2 { font-size: 18px; color: #00d4ff; margin-bottom: 8px; }
-#pinGate p { font-size: 13px; color: #5a7a9a; margin-bottom: 24px; }
-.pin-input-group { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-.pin-input-group input {
-  width: 52px; height: 60px; text-align: center;
-  background: #0a0e17; border: 2px solid #1a2a44; border-radius: 8px;
-  color: #00d4ff; font-size: 26px; font-weight: 700;
-  outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+#pg .lk{font-size:48px;margin-bottom:16px}
+#pg h2{font-size:18px;color:#00d4ff;margin-bottom:8px}
+#pg p{font-size:13px;color:#5a7a9a;margin-bottom:24px}
+.pg{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.pg input{
+  width:52px;height:60px;text-align:center;
+  background:#0a0e17;border:2px solid #1a2a44;border-radius:8px;
+  color:#00d4ff;font-size:26px;font-weight:700;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none
 }
-.pin-input-group input:focus { border-color: #00d4ff; }
-.pin-input-group input.filled { border-color: #2ed573; }
-.pin-error { color: #ff4757; font-size: 13px; min-height: 20px; margin-bottom: 4px; }
-#pinGate button {
-  padding: 14px 48px; background: linear-gradient(135deg, #00d4ff 0%, #0088cc 100%);
-  border: none; border-radius: 8px; color: #fff; font-weight: 700;
-  font-size: 16px; cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
-  -webkit-tap-highlight-color: transparent;
+.pg input:focus{border-color:#00d4ff}
+.pg input.f{border-color:#2ed573}
+.pe{color:#ff4757;font-size:13px;min-height:20px;margin-bottom:4px}
+#pg button{
+  padding:14px 48px;background:linear-gradient(135deg,#00d4ff 0%,#0088cc 100%);
+  border:none;border-radius:8px;color:#fff;font-weight:700;
+  font-size:16px;cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent
 }
-#pinGate button:disabled { opacity: 0.3; cursor: not-allowed; }
-#pinGate button:active { opacity: 0.7; }
+#main{display:none}
+.sd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.sd.i{background:#5a7a9a}
+.sd.ls{background:#00d4ff;animation:pl 1.5s infinite}
+.sd.pr{background:#ffa502}
+.sd.sp{background:#2ed573;animation:pl 1.5s infinite}
+.sd.er{background:#ff4757}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
 
-#mainUI { display: none; }
-.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-.status-dot.idle { background: #5a7a9a; }
-.status-dot.listening { background: #00d4ff; animation: pulse 1.5s infinite; }
-.status-dot.processing { background: #ffa502; }
-.status-dot.speaking { background: #2ed573; animation: pulse 1.5s infinite; }
-.status-dot.error { background: #ff4757; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.mb{
+  width:130px;height:130px;border-radius:50%;
+  border:3px solid #1a2a44;
+  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  margin:24px auto;transition:all .3s;position:relative;
+  box-shadow:0 0 30px rgba(0,212,255,.05);-webkit-tap-highlight-color:transparent
+}
+.mb svg{width:52px;height:52px;fill:#5a7a9a;transition:fill .3s}
+.mb.ac{border-color:#00d4ff;box-shadow:0 0 50px rgba(0,212,255,.25);animation:br 1.5s ease-in-out infinite}
+.mb.ac svg{fill:#00d4ff}
+.mb.pr{border-color:#ffa502}
+.mb.pr svg{fill:#ffa502}
+.mb.sp{border-color:#2ed573;box-shadow:0 0 40px rgba(46,213,115,.2)}
+.mb.sp svg{fill:#2ed573}
+@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-.icon-btn {
-  width: 130px; height: 130px; border-radius: 50%;
-  border: 3px solid #1a2a44;
-  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  margin: 24px auto; transition: all 0.3s ease; position: relative;
-  box-shadow: 0 0 30px rgba(0,212,255,0.05);
-  -webkit-tap-highlight-color: transparent;
+.st{font-size:14px;color:#5a7a9a;margin:8px 0 24px;min-height:20px}
+.ms{
+  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+  border:1px solid #1a2a44;border-radius:12px;padding:16px;
+  margin-bottom:12px;min-height:50px;text-align:left;font-size:14px;line-height:1.6
 }
-.icon-btn svg { width: 52px; height: 52px; fill: #5a7a9a; transition: fill 0.3s; }
-.icon-btn.active { border-color: #00d4ff; box-shadow: 0 0 50px rgba(0,212,255,0.25); animation: breathe 1.5s ease-in-out infinite; }
-.icon-btn.active svg { fill: #00d4ff; }
-.icon-btn.processing { border-color: #ffa502; }
-.icon-btn.processing svg { fill: #ffa502; }
-.icon-btn.speaking { border-color: #2ed573; box-shadow: 0 0 40px rgba(46,213,115,0.2); }
-.icon-btn.speaking svg { fill: #2ed573; }
-@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-
-.status-text { font-size: 14px; color: #5a7a9a; margin: 8px 0 24px; min-height: 20px; }
-.msg-box {
-  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-  border: 1px solid #1a2a44; border-radius: 12px; padding: 16px;
-  margin-bottom: 12px; min-height: 50px; text-align: left;
-  font-size: 14px; line-height: 1.6;
+.ms .lb{font-size:11px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.ms .tx.u{color:#00d4ff}
+.ms .tx.h{color:#2ed573}
+.cv{max-height:320px;overflow-y:auto;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:#1a2a44 transparent}
+.cv::-webkit-scrollbar{width:4px}
+.cv::-webkit-scrollbar-thumb{background:#1a2a44;border-radius:2px}
+.cl{display:flex;gap:12px;justify-content:center;margin-top:16px}
+.cl button{
+  padding:10px 20px;border-radius:8px;border:1px solid #1a2a44;
+  background:#11192e;color:#5a7a9a;font-size:13px;cursor:pointer;transition:all .2s
 }
-.msg-box .label { font-size: 11px; color: #5a7a9a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.msg-box .text.you { color: #00d4ff; }
-.msg-box .text.hermes { color: #2ed573; }
-.conversation { max-height: 320px; overflow-y: auto; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: #1a2a44 transparent; }
-.conversation::-webkit-scrollbar { width: 4px; }
-.conversation::-webkit-scrollbar-thumb { background: #1a2a44; border-radius: 2px; }
-.controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
-.controls button {
-  padding: 10px 20px; border-radius: 8px; border: 1px solid #1a2a44;
-  background: #11192e; color: #5a7a9a; font-size: 13px; cursor: pointer;
-  transition: all 0.2s;
+.tr{display:flex;gap:8px;margin-top:12px}
+.tr input{
+  flex:1;padding:12px 16px;background:#11192e;border:1px solid #1a2a44;
+  border-radius:8px;color:#c8d6e5;font-size:14px;outline:none
 }
-.controls button:hover { border-color: #2a4a6a; color: #8aabcc; }
-.text-row { display: flex; gap: 8px; margin-top: 12px; }
-.text-row input {
-  flex: 1; padding: 12px 16px; background: #11192e; border: 1px solid #1a2a44;
-  border-radius: 8px; color: #c8d6e5; font-size: 14px; outline: none;
+.tr input:focus{border-color:#00d4ff}
+.tr button{
+  padding:12px 24px;background:#1a3a5a;border:1px solid #2a4a6a;
+  border-radius:8px;color:#00d4ff;font-weight:600;cursor:pointer
 }
-.text-row input:focus { border-color: #00d4ff; }
-.text-row button {
-  padding: 12px 24px; background: #1a3a5a; border: 1px solid #2a4a6a;
-  border-radius: 8px; color: #00d4ff; font-weight: 600; cursor: pointer;
-}
-.hint { font-size: 12px; color: #3a4a5a; margin-top: 16px; }
-.status-line { font-size: 11px; margin-top: 20px; }
-.status-line.online { color: #2ed573; }
-.status-line.offline { color: #ff4757; }
-.status-line.checking { color: #ffa502; }
+.ht{font-size:12px;color:#3a4a5a;margin-top:16px}
+.sl{font-size:11px;margin-top:20px}
+.sl.ok{color:#2ed573}
+.sl.no{color:#ff4757}
+.sl.ch{color:#ffa502}
+audio{display:none}
 </style>
 </head>
 <body>
@@ -113,402 +106,249 @@ body {
     <p>Voice Assistant</p>
   </div>
 
-  <div id="pinGate">
-    <div class="lock-icon">🔒</div>
+  <div id="pg">
+    <div class="lk">🔒</div>
     <h2>Access Required</h2>
-    <p>Enter your 4-digit PIN to continue</p>
-    <div class="pin-input-group" id="pinInputs">
-      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="0">
-      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="1">
-      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="2">
-      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="3">
+    <p>Enter PIN to continue</p>
+    <div class="pg" id="pi">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="0">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="1">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="2">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="3">
     </div>
-    <div class="pin-error" id="pinError"></div>
-    <button id="unlockBtn">Unlock</button>
+    <div class="pe" id="pe"></div>
+    <button id="ub">Unlock</button>
   </div>
 
-  <div id="mainUI">
-    <div id="status" class="status-text">
-      <span class="status-dot idle" id="statusDot"></span>
-      <span id="statusLabel">Ready</span>
+  <div id="main">
+    <div class="st">
+      <span class="sd i" id="dot"></span>
+      <span id="lbl">Ready</span>
     </div>
 
-    <button class="icon-btn" id="micButton">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-      </svg>
+    <button class="mb" id="mic">
+      <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
     </button>
 
-    <div class="conversation" id="conversation"></div>
+    <div class="cv" id="cv"></div>
 
-    <div class="text-row">
-      <input type="text" id="textInput" placeholder="Type a message..." autocomplete="off" disabled>
-      <button id="sendBtn">Send</button>
+    <div class="tr">
+      <input type="text" id="ti" placeholder="Type a message..." autocomplete="off" disabled>
+      <button id="sb">Send</button>
     </div>
 
-    <div class="controls">
-      <button id="clearBtn">Clear</button>
+    <div class="cl">
+      <button id="cb">Clear</button>
     </div>
 
-    <div class="hint">Tap the mic and speak, or type below</div>
-    <div id="connStatus" class="status-line checking">⬤ Checking backend...</div>
+    <div class="ht">Tap the mic and speak, or type below</div>
+    <div class="sl ch" id="cs">⬤ Connecting...</div>
   </div>
 
-  <!-- Hidden audio element for real TTS playback -->
-  <audio id="audioPlayer" style="display:none"></audio>
+  <audio id="ap"></audio>
 </div>
 
 <script>
-// =====================================================
-// v5 — REAL TTS AUDIO on backend, no browser speechSynthesis
-// =====================================================
-// FIX: Browser speechSynthesis.speak() often produces silence
-// on mobile (Android Chrome). Instead, the backend uses
-// edge-tts to generate real MP3 audio files, returned as
-// URLs that the audio element plays. Works on ALL devices.
-// =====================================================
-
 (function(){
-  "use strict";
+"use strict";
+var P='4791',pg=document.getElementById('pg'),mu=document.getElementById('main');
+var pe=document.getElementById('pe'),ub=document.getElementById('ub');
+var pis=document.querySelectorAll('.pd'),cs=document.getElementById('cs');
 
-  var PIN = '4791';
+// Check stored PIN or URL param
+var params=new URLSearchParams(window.location.search);
+if(localStorage.getItem('p')==='ok'||params.get('p')==='4791'){
+  localStorage.setItem('p','ok');boot();
+}else{
+  setupPin();
+}
 
-  // ---- PIN Gate ----
-  var pinGate = document.getElementById('pinGate');
-  var mainUI = document.getElementById('mainUI');
-  var pinError = document.getElementById('pinError');
-  var unlockBtn = document.getElementById('unlockBtn');
-  var pinInputs = document.querySelectorAll('.pin-digit');
+function gv(){
+  var v='';
+  for(var i=0;i<pis.length;i++)v+=pis[i].value||'';
+  return v;
+}
 
-  if (localStorage.getItem('lrp_pin') === 'ok') {
-    bootApp();
-  } else {
-    setupPinGate();
-  }
-
-  function getPinVal() {
-    var v = '';
-    for (var i = 0; i < pinInputs.length; i++) {
-      v += pinInputs[i].value || '';
-    }
-    return v;
-  }
-
-  function setupPinGate() {
-    for (var i = 0; i < pinInputs.length; i++) {
-      pinInputs[i].addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 1) this.value = this.value.slice(-1);
-        if (this.value) {
-          this.classList.add('filled');
-          var idx = parseInt(this.getAttribute('data-index'));
-          if (idx < pinInputs.length - 1) {
-            pinInputs[idx + 1].focus();
-          } else {
-            doUnlock();
-          }
-        } else {
-          this.classList.remove('filled');
-        }
-      });
-      pinInputs[i].addEventListener('keydown', function(e) {
-        var idx = parseInt(this.getAttribute('data-index'));
-        if (e.key === 'Backspace' && !this.value && idx > 0) {
-          pinInputs[idx - 1].focus();
-        }
-        if (e.key === 'Enter' || e.key === 'Go' || e.key === 'Done') {
-          e.preventDefault();
-          doUnlock();
-        }
-      });
-    }
-
-    unlockBtn.addEventListener('click', function(e) { e.preventDefault(); doUnlock(); });
-    unlockBtn.addEventListener('touchend', function(e) { e.preventDefault(); doUnlock(); });
-    setTimeout(function() { pinInputs[0].focus(); }, 300);
-  }
-
-  function doUnlock() {
-    var val = getPinVal();
-    if (val !== PIN) {
-      pinError.textContent = 'Wrong PIN. Try 4791.';
-      for (var i = 0; i < pinInputs.length; i++) {
-        pinInputs[i].value = '';
-        pinInputs[i].classList.remove('filled');
-      }
-      pinInputs[0].focus();
-      return;
-    }
-    localStorage.setItem('lrp_pin', 'ok');
-    bootApp();
-  }
-
-  // ---- Boot ----
-  function bootApp() {
-    pinGate.style.display = 'none';
-    mainUI.style.display = 'block';
-    document.getElementById('textInput').disabled = false;
-    setTimeout(function() { document.getElementById('textInput').focus(); }, 200);
-    addMsg('assistant', "Hello Fahim! Tap the mic and speak, or type below.");
-    setStatus('idle', 'Tap the mic or type');
-    checkConn();
-  }
-
-  // ---- State ----
-  var listening = false, processing = false, speaking = false;
-  var recog = null;
-  var hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-  var audioPlayer = document.getElementById('audioPlayer');
-
-  // DOM helpers
-  function $(id) { return document.getElementById(id); }
-  var sd = $('statusDot'), sl = $('statusLabel'), mb = $('micButton');
-  var conv = $('conversation'), ti = $('textInput'), cs = $('connStatus');
-
-  // Backend URL — always use tunnel (both direct tunnel and GitHub Pages use it)
-  var API_BASE = window.location.origin;
-  // If loaded from GitHub Pages, we need to hit the tunnel
-  var isCrossOrigin = window.location.hostname.indexOf('github.io') !== -1 ||
-                      window.location.hostname.indexOf('pages.dev') !== -1;
-  var TUNNEL = 'https://lrp-voice.loca.lt';
-  var BASE = isCrossOrigin ? TUNNEL : API_BASE;
-
-  function apiHeaders() {
-    return {
-      'Content-Type': 'application/json',
-      'bypass-tunnel-reminder': 'true'
-    };
-  }
-
-  function setStatus(s, label) {
-    sd.className = 'status-dot ' + s;
-    mb.className = 'icon-btn';
-    sl.textContent = label;
-    listening = (s === 'listening');
-    processing = (s === 'processing');
-    speaking = (s === 'speaking');
-    if (s === 'listening') mb.classList.add('active');
-    else if (s === 'processing') mb.classList.add('processing');
-    else if (s === 'speaking') mb.classList.add('speaking');
-  }
-
-  function escape(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  function addMsg(role, text) {
-    var d = document.createElement('div');
-    d.className = 'msg-box';
-    var who = (role === 'user') ? 'You' : 'LeadRescuePro';
-    var cls = (role === 'user') ? 'you' : 'hermes';
-    d.innerHTML = '<div class="label">' + who + '</div><div class="text ' + cls + '">' + escape(text) + '</div>';
-    conv.appendChild(d);
-    conv.scrollTop = conv.scrollHeight;
-  }
-
-  // ---- REAL TTS: backend generates actual audio ----
-  function speakReal(text) {
-    return new Promise(function(resolve) {
-      if (!text) {
-        setStatus('idle', 'Tap the mic or type');
-        resolve();
-        return;
-      }
-      setStatus('speaking', 'Speaking...');
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', BASE + '/api/tts?_=' + Date.now(), true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('bypass-tunnel-reminder', 'true');
-      xhr.responseType = 'json';
-
-      xhr.onload = function() {
-        if (xhr.status === 200 && xhr.response && xhr.response.audio_url) {
-          var audioUrl = (isCrossOrigin ? TUNNEL : '') + xhr.response.audio_url;
-          audioPlayer.src = audioUrl;
-          audioPlayer.onended = function() {
-            setStatus('idle', 'Tap the mic or type');
-            resolve();
-          };
-          audioPlayer.onerror = function() {
-            // Fallback: try browser TTS if real audio fails
-            setStatus('idle', 'Tap the mic or type');
-            resolve();
-          };
-          audioPlayer.play().catch(function() {
-            setStatus('idle', 'Tap the mic or type');
-            resolve();
-          });
-        } else {
-          setStatus('idle', 'Tap the mic or type');
-          resolve();
-        }
-      };
-      xhr.onerror = function() {
-        setStatus('idle', 'Tap the mic or type');
-        resolve();
-      };
-      xhr.send(JSON.stringify({text: text}));
+function setupPin(){
+  for(var i=0;i<pis.length;i++){
+    pis[i].addEventListener('input',function(){
+      this.value=this.value.replace(/[^0-9]/g,'');
+      if(this.value.length>1)this.value=this.value.slice(-1);
+      if(this.value){
+        this.classList.add('f');
+        var idx=parseInt(this.getAttribute('data-idx'));
+        if(idx<pis.length-1){pis[idx+1].focus();}
+        else{unlock();}
+      }else{this.classList.remove('f');}
+    });
+    pis[i].addEventListener('keydown',function(e){
+      var idx=parseInt(this.getAttribute('data-idx'));
+      if(e.key==='Backspace'&&!this.value&&idx>0)pis[idx-1].focus();
+      if(e.key==='Enter'||e.key==='Go'||e.key==='Done'){e.preventDefault();unlock();}
     });
   }
+  ub.addEventListener('click',function(e){e.preventDefault();unlock();});
+  ub.addEventListener('touchend',function(e){e.preventDefault();unlock();});
+  setTimeout(function(){pis[0].focus();},300);
+}
 
-  // ---- Backend check ----
-  async function checkConn() {
-    cs.className = 'status-line checking';
-    cs.textContent = '⬤ Checking...';
-    try {
-      var r = await fetch(BASE + '/health?_=' + Date.now(), { headers: apiHeaders() });
-      var ct = r.headers.get('content-type') || '';
-      if (ct.indexOf('json') !== -1) {
-        var d = await r.json();
-        if (d && d.status === 'ok') {
-          cs.className = 'status-line online';
-          cs.textContent = '⬤ Connected';
-          return;
-        }
-      }
-      throw 'not-json';
-    } catch(e) {
-      cs.className = 'status-line offline';
-      cs.textContent = '⬤ Backend offline';
-      setTimeout(checkConn, 4000);
-    }
+function unlock(){
+  if(gv()!==P){
+    pe.textContent='Wrong PIN';
+    for(var i=0;i<pis.length;i++){pis[i].value='';pis[i].classList.remove('f');}
+    pis[0].focus();return;
   }
+  localStorage.setItem('p','ok');boot();
+}
 
-  // ---- API call ----
-  async function callAPI(text) {
-    setStatus('processing', 'Thinking...');
-    var url = BASE + '/api/chat?_=' + Date.now();
-    var body = JSON.stringify({ message: text, session_id: 'v_' + Date.now() });
+function boot(){
+  pg.style.display='none';mu.style.display='block';
+  document.getElementById('ti').disabled=false;
+  setTimeout(function(){document.getElementById('ti').focus();},200);
+  addMsg('h','Hello Fahim! Tap the mic or type below.');
+  setSt('i','Tap the mic or type');
+  // Don't block UI on backend check — try silently
+  checkB();
+}
 
-    for (var i = 0; i < 3; i++) {
-      try {
-        var r = await fetch(url, {
-          method: 'POST',
-          headers: apiHeaders(),
-          body: body
-        });
-        var ct = r.headers.get('content-type') || '';
-        if (ct.indexOf('json') === -1) throw 'captcha';
-        if (!r.ok) throw 'HTTP ' + r.status;
-        var d = await r.json();
-        return d.response;
-      } catch(e) {
-        if (i < 2) {
-          await new Promise(function(r) { setTimeout(r, 2000); });
-          setStatus('processing', e === 'captcha' ? 'Bypassing captcha...' : 'Retrying...');
-        }
-      }
-    }
-    cs.className = 'status-line offline';
-    cs.textContent = '⬤ Backend offline';
-    return "Backend appears offline. Please try again in a moment.";
-  }
+// Short IDs
+function $(id){return document.getElementById(id);}
+var dot=$('dot'),lbl=$('lbl'),mb=$('mic'),cv=$('cv'),ti=$('ti');
+var ls=false,pr=false,sp=false,rc=null;
+var hs=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+var ap=document.getElementById('ap');
+var xo=window.location.hostname.indexOf('github.io')!==-1||window.location.hostname.indexOf('pages.dev')!==-1;
+var B=xo?'https://lrp-voice.loca.lt':window.location.origin;
 
-  async function processAndSpeak(text) {
-    var resp = await callAPI(text);
-    addMsg('assistant', resp);
-    if (resp.indexOf('offline') !== -1) {
-      cs.className = 'status-line offline';
-      cs.textContent = '⬤ Backend offline';
-      setTimeout(checkConn, 4000);
-    } else {
-      cs.className = 'status-line online';
-      cs.textContent = '⬤ Connected';
-      await speakReal(resp);
-    }
-  }
+function hd(){return{'Content-Type':'application/json','bypass-tunnel-reminder':'true'};}
 
-  // ---- Text input ----
-  function sendText() {
-    if (processing || speaking) return;
-    var t = ti.value.trim();
-    if (!t) return;
-    ti.value = '';
-    addMsg('user', t);
-    processAndSpeak(t);
-  }
+function setSt(s,t){
+  dot.className='sd '+s;mb.className='mb';
+  lbl.textContent=t;ls=s==='ls';pr=s==='pr';sp=s==='sp';
+  if(s==='ls')mb.classList.add('ac');
+  else if(s==='pr')mb.classList.add('pr');
+  else if(s==='sp')mb.classList.add('sp');
+}
 
-  // ---- Mic ----
-  function toggleMic() {
-    if (listening) { stopMic(); }
-    else if (!processing && !speaking) { startMic(); }
-  }
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-  function startMic() {
-    if (!hasSpeech) {
-      setStatus('error', 'Voice input not supported');
-      setTimeout(function() { setStatus('idle', 'Type instead'); }, 2000);
-      ti.focus();
-      return;
-    }
-    try {
-      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recog = new SR();
-      recog.continuous = false;
-      recog.interimResults = false;
-      recog.lang = 'en-US';
-      recog.onresult = function(e) {
-        var t = e.results[0][0].transcript;
-        addMsg('user', t);
-        processAndSpeak(t);
-      };
-      recog.onerror = function(e) {
-        if (e.error === 'not-allowed') setStatus('error', 'Mic blocked');
-        else if (e.error === 'no-speech') { /* silent */ }
-        else setStatus('error', e.error);
-        setTimeout(function() {
-          if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
-        }, 2000);
-      };
-      recog.onend = function() {
-        if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
-      };
-      recog.start();
-      setStatus('listening', 'Listening...');
-    } catch(e) {
-      setStatus('error', 'Mic error');
-      setTimeout(function() { setStatus('idle', 'Type'); }, 2000);
-    }
-  }
+function addMsg(r,t){
+  var d=document.createElement('div');d.className='ms';
+  var w=r==='u'?'You':'LeadRescuePro';
+  var c=r==='u'?'u':'h';
+  d.innerHTML='<div class="lb">'+w+'</div><div class="tx '+c+'">'+esc(t)+'</div>';
+  cv.appendChild(d);cv.scrollTop=cv.scrollHeight;
+}
 
-  function stopMic() {
-    if (recog) { try { recog.stop(); } catch(e) {} recog = null; }
-    if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
-  }
-
-  // ---- Event listeners ----
-  micButton.addEventListener('click', function(e) { e.preventDefault(); toggleMic(); });
-  micButton.addEventListener('touchend', function(e) { e.preventDefault(); toggleMic(); });
-
-  document.getElementById('sendBtn').addEventListener('click', function(e) { e.preventDefault(); sendText(); });
-  ti.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendText(); });
-
-  document.getElementById('clearBtn').addEventListener('click', function(e) {
-    e.preventDefault();
-    conv.innerHTML = '';
-    addMsg('assistant', 'Cleared.');
+// TTS — backend generates real audio
+function spk(t){
+  return new Promise(function(r){
+    if(!t){setSt('i','Tap the mic or type');r();return;}
+    setSt('sp','Speaking...');
+    var x=new XMLHttpRequest();
+    x.open('POST',B+'/api/tts?_='+Date.now(),true);
+    x.setRequestHeader('Content-Type','application/json');
+    x.setRequestHeader('bypass-tunnel-reminder','true');
+    x.responseType='json';
+    x.onload=function(){
+      if(x.status===200&&x.response&&x.response.audio_url){
+        var u=(xo?'https://lrp-voice.loca.lt':'')+x.response.audio_url;
+        ap.src=u;
+        ap.onended=function(){setSt('i','Tap the mic or type');r();};
+        ap.onerror=function(){setSt('i','Tap the mic or type');r();};
+        ap.play().catch(function(){setSt('i','Tap the mic or type');r();});
+      }else{setSt('i','Tap the mic or type');r();}
+    };
+    x.onerror=function(){setSt('i','Tap the mic or type');r();};
+    x.send(JSON.stringify({text:t}));
   });
+}
 
-  document.addEventListener('keydown', function(e) {
-    if (e.target.tagName !== 'INPUT' && e.code === 'Space') {
-      e.preventDefault();
-      toggleMic();
+// Silent backend check — doesn't block UI
+async function checkB(){
+  cs.className='sl ch';cs.textContent='⬤ Connecting...';
+  try{
+    var r=await fetch(B+'/health?_='+Date.now(),{headers:hd()});
+    var ct=r.headers.get('content-type')||'';
+    if(ct.indexOf('json')!==-1){
+      var d=await r.json();
+      if(d&&d.status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
     }
-  });
+  }catch(e){}
+  cs.className='sl no';cs.textContent='⬤ Backend offline';
+  // Retry silently every 10 seconds
+  setTimeout(checkB,10000);
+}
 
-  // ---- URL param bypass ----
-  (function() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('pin') === '4791') {
-      localStorage.setItem('lrp_pin', 'ok');
-      bootApp();
+// API call with retry
+async function api(t){
+  setSt('pr','Thinking...');
+  var u=B+'/api/chat?_='+Date.now();
+  var b=JSON.stringify({message:t,session_id:'v_'+Date.now()});
+  for(var i=0;i<3;i++){
+    try{
+      var r=await fetch(u,{method:'POST',headers:hd(),body:b});
+      var ct=r.headers.get('content-type')||'';
+      if(ct.indexOf('json')===-1)throw 'c';
+      if(!r.ok)throw 'h'+r.status;
+      var d=await r.json();
+      cs.className='sl ok';cs.textContent='⬤ Connected';
+      return d.response;
+    }catch(e){
+      if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
     }
-  })();
+  }
+  cs.className='sl no';cs.textContent='⬤ Backend offline';
+  setTimeout(checkB,10000);
+  return "Backend offline. Please try again.";
+}
 
+async function pns(t){
+  var r=await api(t);
+  addMsg('h',r);
+  if(r.indexOf('offline')===-1)await spk(r);
+}
+
+// Text
+function stx(){
+  if(pr||sp)return;
+  var t=ti.value.trim();if(!t)return;
+  ti.value='';addMsg('u',t);pns(t);
+}
+
+// Mic
+function tm(){if(ls){sm();}else if(!pr&&!sp){stm();}}
+
+function stm(){
+  if(!hs){setSt('er','Voice input not supported');setTimeout(function(){setSt('i','Type instead');},2000);ti.focus();return;}
+  try{
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    rc=new SR();rc.continuous=false;rc.interimResults=false;rc.lang='en-US';
+    rc.onresult=function(e){var t=e.results[0][0].transcript;addMsg('u',t);pns(t);};
+    rc.onerror=function(e){
+      if(e.error==='not-allowed')setSt('er','Mic blocked');
+      else if(e.error==='no-speech'){}
+      else setSt('er',e.error);
+      setTimeout(function(){if(!pr&&!sp)setSt('i','Tap mic or type');},2000);
+    };
+    rc.onend=function(){if(!pr&&!sp)setSt('i','Tap mic or type');};
+    rc.start();setSt('ls','Listening...');
+  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
+}
+
+function sm(){if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');}
+
+// Events
+mb.addEventListener('click',function(e){e.preventDefault();tm();});
+mb.addEventListener('touchend',function(e){e.preventDefault();tm();});
+document.getElementById('sb').addEventListener('click',function(e){e.preventDefault();stx();});
+ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
+document.getElementById('cb').addEventListener('click',function(e){
+  e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
+});
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();tm();}
+});
 })();
 </script>
 </body>
