@@ -139,10 +139,12 @@ audio{display:none}
 
     <div class="cl">
       <button id="cb">Clear</button>
+      <button id="smartToggle">🧠 Smart</button>
     </div>
 
     <div class="ht">Tap the mic and speak, or type below</div>
-    <div class="sl ch" id="cs">⬤ Connecting...</div>
+    <div id="modeIndicator" class="sl ch" style="font-size:10px;color:#5a7a9a;margin-top:4px">⚡ Browser STT</div>
+    <div class="sl" id="cs">⬤ Connecting...</div>
   </div>
 
   <audio id="ap"></audio>
@@ -322,6 +324,11 @@ function tm(){if(ls){sm();}else if(!pr&&!sp){stm();}}
 function stm(){
   if(!hs){setSt('er','Voice input not supported');setTimeout(function(){setSt('i','Type instead');},2000);ti.focus();return;}
   try{
+    // Check if smart transcription mode is active
+    if(window._smartMode){
+      stmSmart();
+      return;
+    }
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     rc=new SR();rc.continuous=false;rc.interimResults=false;rc.lang='en-US';
     rc.onresult=function(e){var t=e.results[0][0].transcript;addMsg('u',t);pns(t);};
@@ -336,7 +343,47 @@ function stm(){
   }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
 }
 
-function sm(){if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');}
+// Smart transcription: record audio → send to backend for Whisper+DeepSeek
+var _mediaRecorder=null,_audioChunks=[],_smartStream=null;
+function stmSmart(){
+  setSt('ls','Listening...');
+  _audioChunks=[];
+  try{
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      _smartStream=stream;
+      _mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});
+      _mediaRecorder.ondataavailable=function(e){if(e.data.size>0)_audioChunks.push(e.data);};
+      _mediaRecorder.onstop=function(){
+        _smartStream.getTracks().forEach(function(t){t.stop();});
+        var blob=new Blob(_audioChunks,{type:'audio/webm'});
+        setSt('pr','Transcribing...');
+        var fd=new FormData();
+        fd.append('file',blob,'recording.webm');
+        var xhr=new XMLHttpRequest();
+        xhr.open('POST',B+'/api/transcribe',true);
+        xhr.setRequestHeader('bypass-tunnel-reminder','true');
+        xhr.responseType='json';
+        xhr.onload=function(){
+          if(xhr.status===200&&xhr.response){
+            var t=xhr.response.transcript||xhr.response.whisper_raw||'';
+            if(t){addMsg('u',t);pns(t);}
+            else{setSt('i','Tap mic or type');}
+          }else{setSt('i','Tap mic or type');}
+        };
+        xhr.onerror=function(){setSt('i','Tap mic or type');};
+        xhr.send(fd);
+      };
+      _mediaRecorder.start();
+      // Auto-stop after 10 seconds of silence
+      setTimeout(function(){if(_mediaRecorder&&_mediaRecorder.state==='recording')_mediaRecorder.stop();},10000);
+    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Type');},2000);});
+  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
+}
+
+function sm(){
+  if(_mediaRecorder&&_mediaRecorder.state==='recording'){_mediaRecorder.stop();_mediaRecorder=null;return;}
+  if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');
+}
 
 // Events
 mb.addEventListener('click',function(e){e.preventDefault();tm();});
@@ -345,6 +392,13 @@ document.getElementById('sb').addEventListener('click',function(e){e.preventDefa
 ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
 document.getElementById('cb').addEventListener('click',function(e){
   e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
+});
+document.getElementById('smartToggle').addEventListener('click',function(e){
+  e.preventDefault();
+  window._smartMode=!window._smartMode;
+  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
+  this.style.borderColor=window._smartMode?'#00d4ff':'';
+  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription (Whisper+DeepSeek)':'⚡ Browser STT';
 });
 document.addEventListener('keydown',function(e){
   if(e.target.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();tm();}
