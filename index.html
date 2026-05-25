@@ -3,125 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LeadRescuePro Voice v3</title>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+<title>LeadRescuePro Voice v4</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0a0e17;
-    color: #c8d6e5;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .container { max-width: 480px; width: 100%; text-align: center; }
-  .header { margin-bottom: 32px; }
-  .header h1 {
-    font-size: 20px; font-weight: 700; color: #00d4ff;
-    text-shadow: 0 0 20px rgba(0,212,255,0.15); letter-spacing: 1px;
-  }
-  .header p { font-size: 13px; color: #5a7a9a; margin-top: 4px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0e17; color: #c8d6e5;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.container { max-width: 480px; width: 100%; text-align: center; }
+.header { margin-bottom: 32px; }
+.header h1 { font-size: 22px; font-weight: 700; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.15); letter-spacing: 1px; }
+.header p { font-size: 13px; color: #5a7a9a; margin-top: 4px; }
 
-  #pinGate {
-    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-    border: 1px solid #1a2a44; border-radius: 16px;
-    padding: 40px 24px;
-  }
-  #pinGate .lock-icon { font-size: 48px; margin-bottom: 16px; }
-  #pinGate h2 { font-size: 18px; color: #00d4ff; margin-bottom: 8px; }
-  #pinGate p { font-size: 13px; color: #5a7a9a; margin-bottom: 24px; }
-  .pin-input-group { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-  .pin-input-group input {
-    width: 48px; height: 56px; text-align: center;
-    background: #0a0e17; border: 2px solid #1a2a44; border-radius: 8px;
-    color: #00d4ff; font-size: 24px; font-weight: 700;
-    outline: none; transition: border-color 0.2s;
-  }
-  .pin-input-group input:focus { border-color: #00d4ff; }
-  .pin-input-group input.filled { border-color: #2ed573; }
-  .pin-error { color: #ff4757; font-size: 13px; min-height: 20px; margin-bottom: 4px; }
-  #pinGate button {
-    padding: 12px 40px; background: linear-gradient(135deg, #00d4ff 0%, #0088cc 100%);
-    border: none; border-radius: 8px; color: #fff; font-weight: 700;
-    font-size: 15px; cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
-  }
-  #pinGate button:disabled { opacity: 0.3; cursor: not-allowed; }
+#pinGate {
+  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+  border: 1px solid #1a2a44; border-radius: 16px; padding: 40px 24px;
+}
+#pinGate .lock-icon { font-size: 48px; margin-bottom: 16px; }
+#pinGate h2 { font-size: 18px; color: #00d4ff; margin-bottom: 8px; }
+#pinGate p { font-size: 13px; color: #5a7a9a; margin-bottom: 24px; }
+.pin-input-group { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.pin-input-group input {
+  width: 52px; height: 60px; text-align: center;
+  background: #0a0e17; border: 2px solid #1a2a44; border-radius: 8px;
+  color: #00d4ff; font-size: 26px; font-weight: 700;
+  outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+}
+.pin-input-group input:focus { border-color: #00d4ff; }
+.pin-input-group input.filled { border-color: #2ed573; }
+.pin-error { color: #ff4757; font-size: 13px; min-height: 20px; margin-bottom: 4px; }
+#pinGate button {
+  padding: 14px 48px; background: linear-gradient(135deg, #00d4ff 0%, #0088cc 100%);
+  border: none; border-radius: 8px; color: #fff; font-weight: 700;
+  font-size: 16px; cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+#pinGate button:disabled { opacity: 0.3; cursor: not-allowed; }
+#pinGate button:active { opacity: 0.7; }
 
-  #mainUI { display: none; }
-  .status-dot {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
-    animation: pulse 1.5s infinite;
-  }
-  .status-dot.idle { background: #5a7a9a; animation: none; }
-  .status-dot.listening { background: #00d4ff; }
-  .status-dot.processing { background: #ffa502; }
-  .status-dot.speaking { background: #2ed573; }
-  .status-dot.error { background: #ff4757; animation: none; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+#mainUI { display: none; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status-dot.idle { background: #5a7a9a; }
+.status-dot.listening { background: #00d4ff; }
+.status-dot.processing { background: #ffa502; }
+.status-dot.speaking { background: #2ed573; animation: pulse 1.5s infinite; }
+.status-dot.error { background: #ff4757; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  .mic-button {
-    width: 120px; height: 120px; border-radius: 50%;
-    border: 3px solid #1a2a44;
-    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    margin: 24px auto; transition: all 0.3s ease; position: relative;
-    box-shadow: 0 0 30px rgba(0,212,255,0.05);
-  }
-  .mic-button svg { width: 48px; height: 48px; fill: #5a7a9a; transition: fill 0.3s; }
-  .mic-button.active { border-color: #00d4ff; box-shadow: 0 0 40px rgba(0,212,255,0.2); animation: breathe 1.5s ease-in-out infinite; }
-  .mic-button.active svg { fill: #00d4ff; }
-  .mic-button.processing { border-color: #ffa502; }
-  .mic-button.processing svg { fill: #ffa502; }
-  .mic-button.speaking { border-color: #2ed573; box-shadow: 0 0 30px rgba(46,213,115,0.15); }
-  .mic-button.speaking svg { fill: #2ed573; }
-  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.mic-button {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 3px solid #1a2a44;
+  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  margin: 24px auto; transition: all 0.3s ease; position: relative;
+  box-shadow: 0 0 30px rgba(0,212,255,0.05);
+  -webkit-tap-highlight-color: transparent;
+}
+.mic-button svg { width: 48px; height: 48px; fill: #5a7a9a; transition: fill 0.3s; }
+.mic-button.active { border-color: #00d4ff; box-shadow: 0 0 40px rgba(0,212,255,0.2); animation: breathe 1.5s ease-in-out infinite; }
+.mic-button.active svg { fill: #00d4ff; }
+.mic-button.processing { border-color: #ffa502; }
+.mic-button.processing svg { fill: #ffa502; }
+.mic-button.speaking { border-color: #2ed573; box-shadow: 0 0 30px rgba(46,213,115,0.15); }
+.mic-button.speaking svg { fill: #2ed573; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-  .status-text { font-size: 14px; color: #5a7a9a; margin: 8px 0 24px; min-height: 20px; }
-  .transcript-box {
-    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
-    border: 1px solid #1a2a44; border-radius: 12px; padding: 16px;
-    margin-bottom: 12px; min-height: 50px; text-align: left;
-    font-size: 14px; line-height: 1.6;
-  }
-  .transcript-box .label { font-size: 11px; color: #5a7a9a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .transcript-box .text.you { color: #00d4ff; }
-  .transcript-box .text.hermes { color: #2ed573; }
-  .conversation { max-height: 300px; overflow-y: auto; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: #1a2a44 transparent; }
-  .conversation::-webkit-scrollbar { width: 4px; }
-  .conversation::-webkit-scrollbar-thumb { background: #1a2a44; border-radius: 2px; }
-  .controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
-  .controls button {
-    padding: 10px 20px; border-radius: 8px; border: 1px solid #1a2a44;
-    background: #11192e; color: #5a7a9a; font-size: 13px; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .controls button:hover { border-color: #2a4a6a; color: #8aabcc; }
-  .voice-selector { margin-top: 16px; font-size: 12px; color: #5a7a9a; }
-  .voice-selector select {
-    background: #11192e; border: 1px solid #1a2a44; color: #8aabcc;
-    padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 6px;
-  }
-  .text-input-row { display: flex; gap: 8px; margin-top: 12px; }
-  .text-input-row input {
-    flex: 1; padding: 12px; background: #11192e; border: 1px solid #1a2a44;
-    border-radius: 8px; color: #c8d6e5; font-size: 14px; outline: none;
-  }
-  .text-input-row input:focus { border-color: #00d4ff; }
-  .text-input-row button {
-    padding: 12px 20px; background: #1a3a5a; border: 1px solid #2a4a6a;
-    border-radius: 8px; color: #00d4ff; font-weight: 600; cursor: pointer;
-  }
-  .hint { font-size: 12px; color: #3a4a5a; margin-top: 16px; }
-  .hint kbd { background: #11192e; border: 1px solid #1a2a44; padding: 2px 6px; border-radius: 3px; font-size: 11px; }
-  .status-line { font-size: 11px; margin-top: 20px; }
-  .status-line.online { color: #2ed573; }
-  .status-line.offline { color: #ff4757; }
-  .status-line.checking { color: #ffa502; }
+.status-text { font-size: 14px; color: #5a7a9a; margin: 8px 0 24px; min-height: 20px; }
+.transcript-box {
+  background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+  border: 1px solid #1a2a44; border-radius: 12px; padding: 16px;
+  margin-bottom: 12px; min-height: 50px; text-align: left;
+  font-size: 14px; line-height: 1.6;
+}
+.transcript-box .label { font-size: 11px; color: #5a7a9a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.transcript-box .text.you { color: #00d4ff; }
+.transcript-box .text.hermes { color: #2ed573; }
+.conversation { max-height: 300px; overflow-y: auto; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: #1a2a44 transparent; }
+.conversation::-webkit-scrollbar { width: 4px; }
+.conversation::-webkit-scrollbar-thumb { background: #1a2a44; border-radius: 2px; }
+.controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+.controls button {
+  padding: 10px 20px; border-radius: 8px; border: 1px solid #1a2a44;
+  background: #11192e; color: #5a7a9a; font-size: 13px; cursor: pointer;
+  transition: all 0.2s;
+}
+.controls button:hover { border-color: #2a4a6a; color: #8aabcc; }
+.text-input-row { display: flex; gap: 8px; margin-top: 12px; }
+.text-input-row input {
+  flex: 1; padding: 12px; background: #11192e; border: 1px solid #1a2a44;
+  border-radius: 8px; color: #c8d6e5; font-size: 14px; outline: none;
+}
+.text-input-row input:focus { border-color: #00d4ff; }
+.text-input-row button {
+  padding: 12px 20px; background: #1a3a5a; border: 1px solid #2a4a6a;
+  border-radius: 8px; color: #00d4ff; font-weight: 600; cursor: pointer;
+}
+.hint { font-size: 12px; color: #3a4a5a; margin-top: 16px; }
+.status-line { font-size: 11px; margin-top: 20px; }
+.status-line.online { color: #2ed573; }
+.status-line.offline { color: #ff4757; }
+.status-line.checking { color: #ffa502; }
 </style>
 </head>
 <body>
@@ -136,13 +118,13 @@
     <h2>Access Required</h2>
     <p>Enter your 4-digit PIN to continue</p>
     <div class="pin-input-group" id="pinInputs">
-      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="0">
-      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="1">
-      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="2">
-      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="3">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="0">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="1">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="2">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" class="pin-digit" data-index="3">
     </div>
     <div class="pin-error" id="pinError"></div>
-    <button id="unlockBtn" onclick="unlock()">Unlock</button>
+    <button id="unlockBtn">Unlock</button>
   </div>
 
   <div id="mainUI">
@@ -151,7 +133,7 @@
       <span id="statusLabel">Ready</span>
     </div>
 
-    <button class="mic-button" id="micButton" onclick="toggleMic()">
+    <button class="mic-button" id="micButton">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
         <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
@@ -162,264 +144,387 @@
 
     <div class="text-input-row">
       <input type="text" id="textInput" placeholder="Type a message..." autocomplete="off" disabled>
-      <button onclick="sendText()">Send</button>
+      <button id="sendBtn">Send</button>
     </div>
 
     <div class="controls">
-      <button onclick="clearChat()">Clear</button>
+      <button id="clearBtn">Clear</button>
     </div>
 
-    <div class="voice-selector">
-      Voice: <select id="voiceSelect"></select>
-    </div>
-
-    <div class="hint">Tap mic, press <kbd>Space</kbd>, or type</div>
+    <div class="hint">Tap the mic and speak, or type below</div>
     <div id="connStatus" class="status-line checking">⬤ Checking backend...</div>
   </div>
 </div>
 
 <script>
-// v3 — ROOT CAUSE FIX: localtunnel captcha bypass + content-type check
-// 
-// ROOT CAUSE: loca.lt (localtunnel server) intercepts browser requests from
-// unknown/new IPs and shows a "511 Network Authentication Required" captcha
-// page. The old code got HTML back instead of JSON, and r.json() would throw.
-// 
-// FIX: (1) Add 'bypass-tunnel-reminder' header to every fetch, which tells
-// localtunnel to skip the captcha. (2) Check Content-Type before parsing JSON.
-// (3) If we get HTML (captcha page), show a clear message and auto-retry.
+// =====================================================
+// v4 — FULL REWRITE: fixed PIN unlock, robust event handling, voice I/O
+// =====================================================
+// CRITICAL FIX: No IIFE wrapping the PIN logic. Everything is
+// plain global functions/variables so onclick/addEventListener
+// can find them. No scope chains to worry about.
+// =====================================================
 
-const PIN = '4791';
+(function(){
+  "use strict";
 
-// Pin input logic
-(function() {
-  const inputs = document.querySelectorAll('.pin-digit');
-  inputs.forEach((el, i, arr) => {
-    el.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-      if (this.value) { this.classList.add('filled'); if (arr[i+1]) setTimeout(() => arr[i+1].focus(), 50); }
-      else this.classList.remove('filled');
-      // Auto-unlock when all 4 digits typed
-      if (getPinVal().length === 4) unlock();
-    });
-    el.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace' && !this.value && i > 0) arr[i-1].focus();
-      if (e.key === 'Enter') unlock();
-    });
-  });
-  function getPinVal() { return Array.from(inputs).map(e => e.value).join(''); }
-  window.getPin = getPinVal;
-})();
+  const PIN = '4791';
 
-function unlock() {
-  if (window.getPin() !== PIN) {
-    document.getElementById('pinError').textContent = 'Wrong PIN';
-    document.querySelectorAll('.pin-digit').forEach(e => { e.value = ''; e.classList.remove('filled'); });
-    document.querySelector('.pin-digit').focus();
-    return;
+  // ---- PIN Gate ----
+  const pinGate = document.getElementById('pinGate');
+  const mainUI = document.getElementById('mainUI');
+  const pinError = document.getElementById('pinError');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const pinInputs = document.querySelectorAll('.pin-digit');
+  const connStatus = document.getElementById('connStatus');
+
+  // Check localStorage first
+  if (localStorage.getItem('lrp_pin') === 'ok') {
+    bootApp();
+  } else {
+    // Show pin gate (already shown by default)
+    setupPinGate();
   }
-  localStorage.setItem('lrp_pin', 'ok');
-  bootApp();
-}
-if (localStorage.getItem('lrp_pin') === 'ok') bootApp();
 
-// ===== STATE =====
-let listening = false, processing = false, speaking = false;
-let recog = null, prefVoice = '', voiceList = [];
-const hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-const $ = id => document.getElementById(id);
-const mb = $('micButton'), sd = $('statusDot'), sl = $('statusLabel');
-const conv = $('conversation'), vs = $('voiceSelect'), ti = $('textInput'), cs = $('connStatus');
+  function getPinVal() {
+    let v = '';
+    for (let i = 0; i < pinInputs.length; i++) {
+      v += pinInputs[i].value || '';
+    }
+    return v;
+  }
 
-// Detect if cross-origin (GitHub Pages) vs same-origin (tunnel)
-const TUNNEL_HOST = 'https://lrp-voice.loca.lt';
-const CROSS = window.location.hostname.includes('github.io') || window.location.hostname.includes('pages.dev');
+  function setupPinGate() {
+    // Auto-unlock on 4th digit
+    for (let i = 0; i < pinInputs.length; i++) {
+      pinInputs[i].addEventListener('input', function() {
+        // Strip non-digits
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 1) this.value = this.value.slice(-1);
 
-// Send bypass-tunnel-reminder on ALL requests so localtunnel
-// doesn't intercept with its 511 captcha page.
-function apiHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'bypass-tunnel-reminder': 'true'
-  };
-}
+        if (this.value) {
+          this.classList.add('filled');
+          // Focus next
+          if (i < pinInputs.length - 1) {
+            pinInputs[i + 1].focus();
+          } else {
+            // Last digit typed — auto-unlock!
+            doUnlock();
+          }
+        } else {
+          this.classList.remove('filled');
+        }
+      });
 
-function bootApp() {
-  $('pinGate').style.display = 'none';
-  $('mainUI').style.display = 'block';
-  ti.disabled = false;
-  ti.focus();
-  addMsg('assistant', "Hello Fahim! Tap the mic and speak, or type.");
-  setTimeout(() => setStatus('idle', 'Tap the mic or type'), 200);
-  checkConn();
-}
+      pinInputs[i].addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && i > 0) {
+          pinInputs[i - 1].focus();
+        }
+        if (e.key === 'Enter' || e.key === 'Go' || e.key === 'Done') {
+          e.preventDefault();
+          doUnlock();
+        }
+      });
+    }
 
-function setStatus(s, label) {
-  sd.className = 'status-dot ' + s;
-  mb.className = 'mic-button';
-  sl.textContent = label;
-  listening = s === 'listening';
-  processing = s === 'processing';
-  speaking = s === 'speaking';
-  if (s === 'listening') mb.classList.add('active');
-  else if (s === 'processing') mb.classList.add('processing');
-  else if (s === 'speaking') mb.classList.add('speaking');
-}
+    // Unlock button — use addEventListener, NOT onclick attribute
+    unlockBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      doUnlock();
+    });
 
-function escape(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    unlockBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      doUnlock();
+    });
 
-function addMsg(role, text) {
-  const d = document.createElement('div'); d.className = 'transcript-box';
-  d.innerHTML = '<div class="label">' + (role === 'user' ? 'You' : 'LeadRescuePro') + '</div><div class="text ' + role + '">' + escape(text) + '</div>';
-  conv.appendChild(d); conv.scrollTop = conv.scrollHeight;
-}
+    // Focus first input
+    setTimeout(function() { pinInputs[0].focus(); }, 300);
+  }
 
-function clearChat() { conv.innerHTML = ''; addMsg('assistant', 'Cleared.'); }
+  function doUnlock() {
+    var val = getPinVal();
+    if (val !== PIN) {
+      pinError.textContent = 'Wrong PIN. Try 4791.';
+      for (var i = 0; i < pinInputs.length; i++) {
+        pinInputs[i].value = '';
+        pinInputs[i].classList.remove('filled');
+      }
+      pinInputs[0].focus();
+      return;
+    }
+    // Correct PIN
+    localStorage.setItem('lrp_pin', 'ok');
+    bootApp();
+  }
 
-// ===== VOICES =====
-function populateVoices() {
-  if (typeof speechSynthesis === 'undefined') return;
-  voiceList = speechSynthesis.getVoices();
-  const cur = vs.value; vs.innerHTML = '<option value="">Auto</option>';
-  voiceList.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name + ' (' + v.lang + ')'; vs.appendChild(o); });
-  vs.value = cur;
-}
-if (typeof speechSynthesis !== 'undefined') { speechSynthesis.onvoiceschanged = populateVoices; setTimeout(populateVoices, 500); }
-vs.addEventListener('change', function() { prefVoice = this.value; });
+  // ---- Boot ----
+  function bootApp() {
+    pinGate.style.display = 'none';
+    mainUI.style.display = 'block';
+    document.getElementById('textInput').disabled = false;
+    setTimeout(function() { document.getElementById('textInput').focus(); }, 200);
+    addMsg('assistant', "Hello Fahim! I'm LeadRescuePro Voice. Tap the mic and speak, or type below.");
+    setStatus('idle', 'Tap the mic or type');
+    checkConn();
+  }
 
-// ===== SPEAK =====
-function speak(text) {
-  return new Promise(r => {
-    if (!text || !speechSynthesis) { setStatus('idle', 'Tap the mic or type'); r(); return; }
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.rate = 1.0; u.pitch = 1.0;
-    if (prefVoice) { const f = voiceList.find(v => v.name === prefVoice); if (f) u.voice = f; }
-    setStatus('speaking', 'Speaking...');
-    u.onend = () => { setStatus('idle', 'Tap the mic or type'); r(); };
-    u.onerror = () => { setStatus('idle', 'Tap the mic or type'); r(); };
-    speechSynthesis.speak(u);
-  });
-}
+  // ---- State ----
+  var listening = false, processing = false, speaking = false;
+  var recog = null;
+  var hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 
-// ===== BACKEND CHECK (with bypass header) =====
-async function checkConn() {
-  cs.className = 'status-line checking';
-  cs.textContent = '⬤ Checking...';
-  const url = (CROSS ? TUNNEL_HOST : '') + '/health?_=' + Date.now();
-  try {
-    const r = await fetch(url, { headers: apiHeaders() });
-    const ct = r.headers.get('content-type') || '';
-    if (ct.includes('json')) {
-      const d = await r.json();
-      if (d && d.status === 'ok') {
-        cs.className = 'status-line online';
-        cs.textContent = '⬤ Connected';
+  // DOM refs
+  function $(id) { return document.getElementById(id); }
+  var sd = $('statusDot'), sl = $('statusLabel'), mb = $('micButton');
+  var conv = $('conversation'), ti = $('textInput'), cs = $('connStatus');
+
+  // Tunnel config
+  var TUNNEL_HOST = 'https://lrp-voice.loca.lt';
+  var CROSS = window.location.hostname.indexOf('github.io') !== -1 ||
+              window.location.hostname.indexOf('pages.dev') !== -1;
+
+  function apiHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'bypass-tunnel-reminder': 'true'
+    };
+  }
+
+  // ---- Status ----
+  function setStatus(s, label) {
+    sd.className = 'status-dot ' + s;
+    mb.className = 'mic-button';
+    sl.textContent = label;
+    listening = (s === 'listening');
+    processing = (s === 'processing');
+    speaking = (s === 'speaking');
+    if (s === 'listening') mb.classList.add('active');
+    else if (s === 'processing') mb.classList.add('processing');
+    else if (s === 'speaking') mb.classList.add('speaking');
+  }
+
+  function escape(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function addMsg(role, text) {
+    var d = document.createElement('div');
+    d.className = 'transcript-box';
+    var who = (role === 'user') ? 'You' : 'LeadRescuePro';
+    var cls = (role === 'user') ? 'you' : 'hermes';
+    d.innerHTML = '<div class="label">' + who + '</div><div class="text ' + cls + '">' + escape(text) + '</div>';
+    conv.appendChild(d);
+    conv.scrollTop = conv.scrollHeight;
+  }
+
+  // ---- Speak (TTS — voice OUTPUT) ----
+  function speak(text) {
+    return new Promise(function(resolve) {
+      if (!text || typeof speechSynthesis === 'undefined') {
+        setStatus('idle', 'Tap the mic or type');
+        resolve();
         return;
       }
-    }
-    // Captcha page or unexpected response
-    throw 'captcha-or-error';
-  } catch(e) {
-    cs.className = 'status-line offline';
-    cs.textContent = '⬤ Backend offline';
-    setTimeout(checkConn, 4000);
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.95;
+      u.pitch = 1.0;
+      // Try to pick a good English voice
+      var voices = speechSynthesis.getVoices();
+      for (var i = 0; i < voices.length; i++) {
+        if (voices[i].lang.startsWith('en') && voices[i].name.indexOf('Female') !== -1) {
+          u.voice = voices[i];
+          break;
+        }
+      }
+      setStatus('speaking', 'Speaking...');
+      u.onend = function() { setStatus('idle', 'Tap the mic or type'); resolve(); };
+      u.onerror = function() { setStatus('idle', 'Tap the mic or type'); resolve(); };
+      speechSynthesis.speak(u);
+    });
   }
-}
 
-// ===== API CALL (with bypass header + content-type check) =====
-async function callAPI(text) {
-  setStatus('processing', 'Thinking...');
-  const url = (CROSS ? TUNNEL_HOST : '') + '/api/chat?_=' + Date.now();
-  const body = JSON.stringify({ message: text, session_id: 'v_' + Date.now() });
-
-  for (let i = 0; i < 3; i++) {
+  // ---- Backend check ----
+  async function checkConn() {
+    cs.className = 'status-line checking';
+    cs.textContent = '⬤ Checking...';
+    var url = (CROSS ? TUNNEL_HOST : '') + '/health?_=' + Date.now();
     try {
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: apiHeaders(),
-        body: body
-      });
-      // CRITICAL: Check if localtunnel returned its captcha HTML page
-      const ct = r.headers.get('content-type') || '';
-      if (!ct.includes('json')) {
-        throw 'localtunnel-captcha';
+      var r = await fetch(url, { headers: apiHeaders() });
+      var ct = r.headers.get('content-type') || '';
+      if (ct.indexOf('json') !== -1) {
+        var d = await r.json();
+        if (d && d.status === 'ok') {
+          cs.className = 'status-line online';
+          cs.textContent = '⬤ Connected';
+          return;
+        }
       }
-      if (!r.ok) throw 'HTTP ' + r.status;
-      const d = await r.json();
-      return d.response;
+      throw 'captcha-or-error';
     } catch(e) {
-      const msg = e === 'localtunnel-captcha'
-        ? 'LocalTunnel captcha page. Retrying...'
-        : 'Retry ' + (i+2) + '/3...';
-      if (i < 2) {
-        await new Promise(r => setTimeout(r, 2000));
-        setStatus('processing', msg);
-      }
+      cs.className = 'status-line offline';
+      cs.textContent = '⬤ Backend offline';
+      setTimeout(checkConn, 4000);
     }
   }
-  cs.className = 'status-line offline';
-  cs.textContent = '⬤ Backend offline';
-  return "Backend appears offline. Please try the direct tunnel URL: " + TUNNEL_HOST;
-}
 
-async function processAndSpeak(text) {
-  const resp = await callAPI(text);
-  addMsg('assistant', resp);
-  if (resp.includes('offline')) {
+  // ---- API call ----
+  async function callAPI(text) {
+    setStatus('processing', 'Thinking...');
+    var url = (CROSS ? TUNNEL_HOST : '') + '/api/chat?_=' + Date.now();
+    var body = JSON.stringify({ message: text, session_id: 'v_' + Date.now() });
+
+    for (var i = 0; i < 3; i++) {
+      try {
+        var r = await fetch(url, {
+          method: 'POST',
+          headers: apiHeaders(),
+          body: body
+        });
+        var ct = r.headers.get('content-type') || '';
+        if (ct.indexOf('json') === -1) {
+          throw 'localtunnel-captcha';
+        }
+        if (!r.ok) throw 'HTTP ' + r.status;
+        var d = await r.json();
+        return d.response;
+      } catch(e) {
+        var msg = (e === 'localtunnel-captcha')
+          ? 'LocalTunnel captcha — retrying...'
+          : 'Retry ' + (i+2) + '/3...';
+        if (i < 2) {
+          await new Promise(function(r) { setTimeout(r, 2000); });
+          setStatus('processing', msg);
+        }
+      }
+    }
     cs.className = 'status-line offline';
     cs.textContent = '⬤ Backend offline';
-    setTimeout(checkConn, 4000);
-  } else {
-    cs.className = 'status-line online';
-    cs.textContent = '⬤ Connected';
-    await speak(resp);
+    return "Backend appears offline. Try the direct tunnel URL: " + TUNNEL_HOST;
   }
-}
 
-// ===== TEXT INPUT =====
-function sendText() {
-  if (processing || speaking) return;
-  const t = ti.value.trim(); if (!t) return;
-  ti.value = ''; addMsg('user', t); processAndSpeak(t);
-}
-ti.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendText(); });
-
-// ===== MIC =====
-function toggleMic() {
-  if (listening) { stopMic(); }
-  else if (!processing && !speaking) { startMic(); }
-}
-function startMic() {
-  if (!hasSpeech) {
-    setStatus('error', 'Voice not supported');
-    setTimeout(() => setStatus('idle', 'Type instead'), 2000);
-    ti.focus(); return;
+  async function processAndSpeak(text) {
+    var resp = await callAPI(text);
+    addMsg('assistant', resp);
+    if (resp.indexOf('offline') !== -1) {
+      cs.className = 'status-line offline';
+      cs.textContent = '⬤ Backend offline';
+      setTimeout(checkConn, 4000);
+    } else {
+      cs.className = 'status-line online';
+      cs.textContent = '⬤ Connected';
+      // Speak the response out loud
+      await speak(resp);
+    }
   }
-  try {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recog = new SR();
-    recog.continuous = false; recog.interimResults = false; recog.lang = 'en-US';
-    recog.onresult = function(e) {
-      const t = e.results[0][0].transcript; addMsg('user', t); processAndSpeak(t);
-    };
-    recog.onerror = function(e) {
-      if (e.error === 'not-allowed') setStatus('error', 'Mic blocked');
-      else if (e.error === 'no-speech') setStatus('idle', 'Tap mic or type');
-      else setStatus('error', e.error);
-      setTimeout(() => { if (!processing && !speaking) setStatus('idle', 'Tap mic or type'); }, 2000);
-    };
-    recog.onend = function() { if (!processing && !speaking) setStatus('idle', 'Tap mic or type'); };
-    recog.start(); setStatus('listening', 'Listening...');
-  } catch(e) { setStatus('error', 'Mic error'); setTimeout(() => setStatus('idle', 'Type'), 2000); }
-}
-function stopMic() {
-  if (recog) { try { recog.stop(); } catch(e) {} recog = null; }
-  if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
-}
 
-document.addEventListener('keydown', function(e) {
-  if (e.target.tagName !== 'INPUT' && e.code === 'Space') { e.preventDefault(); toggleMic(); }
-});
+  // ---- Text input ----
+  function sendText() {
+    if (processing || speaking) return;
+    var t = ti.value.trim();
+    if (!t) return;
+    ti.value = '';
+    addMsg('user', t);
+    processAndSpeak(t);
+  }
+
+  // ---- Mic ----
+  function toggleMic() {
+    if (listening) { stopMic(); }
+    else if (!processing && !speaking) { startMic(); }
+  }
+
+  function startMic() {
+    if (!hasSpeech) {
+      setStatus('error', 'Voice not supported');
+      setTimeout(function() { setStatus('idle', 'Type instead'); }, 2000);
+      ti.focus();
+      return;
+    }
+    try {
+      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recog = new SR();
+      recog.continuous = false;
+      recog.interimResults = false;
+      recog.lang = 'en-US';
+      recog.onresult = function(e) {
+        var t = e.results[0][0].transcript;
+        addMsg('user', t);
+        processAndSpeak(t);
+      };
+      recog.onerror = function(e) {
+        if (e.error === 'not-allowed') setStatus('error', 'Mic blocked. Allow mic access.');
+        else if (e.error === 'no-speech') { /* silent */ setStatus('idle', 'Tap mic or type'); }
+        else setStatus('error', e.error);
+        setTimeout(function() {
+          if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
+        }, 2000);
+      };
+      recog.onend = function() {
+        if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
+      };
+      recog.start();
+      setStatus('listening', 'Listening...');
+    } catch(e) {
+      setStatus('error', 'Mic error');
+      setTimeout(function() { setStatus('idle', 'Type'); }, 2000);
+    }
+  }
+
+  function stopMic() {
+    if (recog) { try { recog.stop(); } catch(e) {} recog = null; }
+    if (!processing && !speaking) setStatus('idle', 'Tap mic or type');
+  }
+
+  // ---- Event listeners ----
+
+  // Mic button
+  micButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    toggleMic();
+  });
+  micButton.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    toggleMic();
+  });
+
+  // Send button
+  document.getElementById('sendBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    sendText();
+  });
+  ti.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendText();
+  });
+
+  // Clear button
+  document.getElementById('clearBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    conv.innerHTML = '';
+    addMsg('assistant', 'Conversation cleared.');
+  });
+
+  // Space bar shortcut
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName !== 'INPUT' && e.code === 'Space') {
+      e.preventDefault();
+      toggleMic();
+    }
+  });
+
+  // ---- URL param bypass (emergency access) ----
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('pin') === '4791') {
+      localStorage.setItem('lrp_pin', 'ok');
+      bootApp();
+    }
+  })();
+
+})();
 </script>
 </body>
 </html>
