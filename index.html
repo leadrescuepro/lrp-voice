@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LeadRescuePro Voice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0e17;
+    color: #c8d6e5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container { max-width: 480px; width: 100%; text-align: center; }
+  .header { margin-bottom: 32px; }
+  .header h1 {
+    font-size: 20px; font-weight: 700; color: #00d4ff;
+    text-shadow: 0 0 20px rgba(0,212,255,0.15); letter-spacing: 1px;
+  }
+  .header p { font-size: 13px; color: #5a7a9a; margin-top: 4px; }
+
+  /* PIN Gate */
+  #pinGate {
+    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+    border: 1px solid #1a2a44; border-radius: 16px;
+    padding: 40px 24px;
+  }
+  #pinGate .lock-icon { font-size: 48px; margin-bottom: 16px; }
+  #pinGate h2 { font-size: 18px; color: #00d4ff; margin-bottom: 8px; }
+  #pinGate p { font-size: 13px; color: #5a7a9a; margin-bottom: 24px; }
+  .pin-input-group { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+  .pin-input-group input {
+    width: 48px; height: 56px; text-align: center;
+    background: #0a0e17; border: 2px solid #1a2a44; border-radius: 8px;
+    color: #00d4ff; font-size: 24px; font-weight: 700;
+    outline: none; transition: border-color 0.2s;
+  }
+  .pin-input-group input:focus { border-color: #00d4ff; }
+  .pin-input-group input.filled { border-color: #2ed573; }
+  .pin-error { color: #ff4757; font-size: 13px; min-height: 20px; }
+  #pinGate button {
+    padding: 12px 40px; background: linear-gradient(135deg, #00d4ff 0%, #0088cc 100%);
+    border: none; border-radius: 8px; color: #fff; font-weight: 700;
+    font-size: 15px; cursor: pointer; transition: opacity 0.2s; margin-top: 8px;
+  }
+  #pinGate button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Main UI */
+  #mainUI { display: none; }
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+  .status-dot.idle { background: #5a7a9a; animation: none; }
+  .status-dot.listening { background: #00d4ff; }
+  .status-dot.processing { background: #ffa502; }
+  .status-dot.speaking { background: #2ed573; }
+  .status-dot.error { background: #ff4757; animation: none; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .mic-button {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 3px solid #1a2a44;
+    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    margin: 24px auto; transition: all 0.3s ease; position: relative;
+    box-shadow: 0 0 30px rgba(0,212,255,0.05);
+  }
+  .mic-button svg { width: 48px; height: 48px; fill: #5a7a9a; transition: fill 0.3s; }
+  .mic-button.active { border-color: #00d4ff; box-shadow: 0 0 40px rgba(0,212,255,0.2); animation: breathe 1.5s ease-in-out infinite; }
+  .mic-button.active svg { fill: #00d4ff; }
+  .mic-button.processing { border-color: #ffa502; }
+  .mic-button.processing svg { fill: #ffa502; }
+  .mic-button.speaking { border-color: #2ed573; box-shadow: 0 0 30px rgba(46,213,115,0.15); }
+  .mic-button.speaking svg { fill: #2ed573; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+  .status-text { font-size: 14px; color: #5a7a9a; margin: 8px 0 24px; min-height: 20px; }
+  .transcript-box {
+    background: linear-gradient(135deg, #11192e 0%, #0f1629 100%);
+    border: 1px solid #1a2a44; border-radius: 12px; padding: 16px;
+    margin-bottom: 12px; min-height: 50px; text-align: left;
+    font-size: 14px; line-height: 1.6;
+  }
+  .transcript-box .label { font-size: 11px; color: #5a7a9a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .transcript-box .text.you { color: #00d4ff; }
+  .transcript-box .text.hermes { color: #2ed573; }
+  .conversation { max-height: 300px; overflow-y: auto; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: #1a2a44 transparent; }
+  .conversation::-webkit-scrollbar { width: 4px; }
+  .conversation::-webkit-scrollbar-thumb { background: #1a2a44; border-radius: 2px; }
+  .controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+  .controls button {
+    padding: 10px 20px; border-radius: 8px; border: 1px solid #1a2a44;
+    background: #11192e; color: #5a7a9a; font-size: 13px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .controls button:hover { border-color: #2a4a6a; color: #8aabcc; }
+  .voice-selector { margin-top: 16px; font-size: 12px; color: #5a7a9a; }
+  .voice-selector select {
+    background: #11192e; border: 1px solid #1a2a44; color: #8aabcc;
+    padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 6px;
+  }
+  .text-input-row { display: flex; gap: 8px; margin-top: 12px; }
+  .text-input-row input {
+    flex: 1; padding: 12px; background: #11192e; border: 1px solid #1a2a44;
+    border-radius: 8px; color: #c8d6e5; font-size: 14px; outline: none;
+  }
+  .text-input-row input:focus { border-color: #00d4ff; }
+  .text-input-row button {
+    padding: 12px 20px; background: #1a3a5a; border: 1px solid #2a4a6a;
+    border-radius: 8px; color: #00d4ff; font-weight: 600; cursor: pointer;
+  }
+  .hint { font-size: 12px; color: #3a4a5a; margin-top: 16px; }
+  .hint kbd { background: #11192e; border: 1px solid #1a2a44; padding: 2px 6px; border-radius: 3px; font-size: 11px; }
+  .tunnel-status { font-size: 11px; color: #3a4a5a; margin-top: 20px; }
+  .tunnel-status.online { color: #2ed573; }
+  .tunnel-status.offline { color: #ff4757; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>LeadRescuePro</h1>
+    <p>Voice Assistant</p>
+  </div>
+
+  <!-- PIN Gate -->
+  <div id="pinGate">
+    <div class="lock-icon">🔒</div>
+    <h2>Access Required</h2>
+    <p>Enter your 4-digit PIN to continue</p>
+    <div class="pin-input-group" id="pinInputs">
+      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="0">
+      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="1">
+      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="2">
+      <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" class="pin-digit" data-index="3">
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <button id="unlockBtn" disabled onclick="checkPin()">Unlock</button>
+  </div>
+
+  <!-- Main UI -->
+  <div id="mainUI">
+    <div id="status" class="status-text">
+      <span class="status-dot idle" id="statusDot"></span>
+      <span id="statusLabel">Connecting...</span>
+    </div>
+
+    <button class="mic-button" id="micButton" onclick="toggleMic()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+      </svg>
+    </button>
+
+    <div class="conversation" id="conversation"></div>
+
+    <div class="text-input-row">
+      <input type="text" id="textInput" placeholder="Type a message..." autocomplete="off" disabled>
+      <button onclick="sendTextMessage()" id="sendBtn">Send</button>
+    </div>
+
+    <div class="controls">
+      <button onclick="clearConversation()">Clear</button>
+    </div>
+
+    <div class="voice-selector">
+      Voice: <select id="voiceSelect"></select>
+    </div>
+
+    <div class="hint">Tap mic to speak, or type. Press <kbd>Space</kbd> to toggle mic.</div>
+    <div id="tunnelStatus" class="tunnel-status offline">⬤ Backend offline</div>
+  </div>
+</div>
+
+<script>
+// ===== PIN =====
+const CORRECT_PIN = '4791';
+
+document.querySelectorAll('.pin-digit').forEach((input, idx, arr) => {
+  input.addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (this.value) { this.classList.add('filled'); const next = arr[idx + 1]; if (next) setTimeout(() => next.focus(), 50); }
+    else { this.classList.remove('filled'); }
+    updateUnlockBtn();
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && !this.value && idx > 0) { arr[idx - 1].focus(); }
+    if (e.key === 'Enter') { checkPin(); }
+  });
+});
+
+function getPinValue() { return Array.from(document.querySelectorAll('.pin-digit')).map(i => i.value).join(''); }
+function updateUnlockBtn() { document.getElementById('unlockBtn').disabled = getPinValue().length < 4; }
+
+function checkPin() {
+  const pin = getPinValue();
+  if (pin === CORRECT_PIN) {
+    document.getElementById('pinGate').style.display = 'none';
+    document.getElementById('mainUI').style.display = 'block';
+    document.getElementById('textInput').disabled = false;
+    document.getElementById('textInput').focus();
+    localStorage.setItem('lrp_voice_pin', 'verified');
+  } else {
+    document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
+    document.querySelectorAll('.pin-digit').forEach(i => { i.value = ''; i.classList.remove('filled'); });
+    document.querySelector('.pin-digit[data-index="0"]').focus();
+    updateUnlockBtn();
+  }
+}
+
+if (localStorage.getItem('lrp_voice_pin') === 'verified') {
+  document.getElementById('pinGate').style.display = 'none';
+  document.getElementById('mainUI').style.display = 'block';
+  document.getElementById('textInput').disabled = false;
+  setTimeout(() => document.getElementById('textInput').focus(), 300);
+}
+
+// ===== State =====
+let isListening = false, isProcessing = false, isSpeaking = false;
+let recognition = null, preferredVoice = '', voices = [];
+let speechSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+const micButton = document.getElementById('micButton');
+const statusDot = document.getElementById('statusDot');
+const statusLabel = document.getElementById('statusLabel');
+const conversation = document.getElementById('conversation');
+const voiceSelect = document.getElementById('voiceSelect');
+const textInput = document.getElementById('textInput');
+
+// ===== Tunnel URL (changing to lrp-voice.loca.lt) =====
+const API_BASE = 'https://lrp-voice.loca.lt';
+
+function setStatus(state, label) {
+  statusDot.className = 'status-dot ' + state;
+  micButton.className = 'mic-button';
+  statusLabel.textContent = label;
+  if (state === 'listening') micButton.classList.add('active');
+  else if (state === 'processing') micButton.classList.add('processing');
+  else if (state === 'speaking') micButton.classList.add('speaking');
+}
+
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = 'transcript-box';
+  div.innerHTML = '<div class="label">' + (role === 'user' ? 'You' : 'LeadRescuePro') + '</div><div class="text ' + role + '">' + escapeHtml(text) + '</div>';
+  conversation.appendChild(div);
+  conversation.scrollTop = conversation.scrollHeight;
+}
+
+function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
+function clearConversation() { conversation.innerHTML = ''; addMessage('assistant', 'Conversation cleared. Tap the mic or type to start.'); }
+
+function populateVoices() {
+  if (typeof speechSynthesis === 'undefined') return;
+  voices = speechSynthesis.getVoices();
+  const current = voiceSelect.value;
+  voiceSelect.innerHTML = '<option value="">Auto</option>';
+  voices.forEach(v => { const opt = document.createElement('option'); opt.value = v.name; opt.textContent = v.name + ' (' + v.lang + ')'; voiceSelect.appendChild(opt); });
+  voiceSelect.value = current;
+}
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.onvoiceschanged = populateVoices;
+  setTimeout(populateVoices, 500);
+}
+voiceSelect.addEventListener('change', function() { preferredVoice = this.value; });
+
+function speak(text) {
+  return new Promise((resolve) => {
+    if (!text || text.trim().length === 0 || typeof speechSynthesis === 'undefined') { setStatus('idle', 'Tap the mic or type'); resolve(); return; }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text); utterance.rate = 1.0; utterance.pitch = 1.0; utterance.volume = 1.0;
+    if (preferredVoice) { const found = voices.find(v => v.name === preferredVoice); if (found) utterance.voice = found; }
+    setStatus('speaking', 'Speaking...');
+    utterance.onend = () => { setStatus('idle', 'Tap the mic or type'); resolve(); };
+    utterance.onerror = () => { setStatus('idle', 'Tap the mic or type'); resolve(); };
+    speechSynthesis.speak(utterance);
+  });
+}
+
+async function sendToHermes(text) {
+  setStatus('processing', 'Thinking...');
+  try {
+    const resp = await fetch(API_BASE + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, session_id: getSessionId() })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    return data.response;
+  } catch (e) {
+    console.error('API error:', e);
+    document.getElementById('tunnelStatus').className = 'tunnel-status offline';
+    document.getElementById('tunnelStatus').textContent = '⬤ Backend offline';
+    return "Sorry, the backend is offline. Let Fahim know to restart the tunnel.";
+  }
+}
+
+function getSessionId() {
+  let sid = localStorage.getItem('lrp_voice_session');
+  if (!sid) { sid = 'voice_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('lrp_voice_session', sid); }
+  return sid;
+}
+
+async function processAndSpeak(text) {
+  const response = await sendToHermes(text);
+  addMessage('assistant', response);
+  if (!response.includes("backend is offline")) {
+    document.getElementById('tunnelStatus').className = 'tunnel-status online';
+    document.getElementById('tunnelStatus').textContent = '⬤ Connected';
+  }
+  await speak(response);
+}
+
+function sendTextMessage() {
+  if (isProcessing || isSpeaking) return;
+  const text = textInput.value.trim();
+  if (!text) return;
+  textInput.value = '';
+  addMessage('user', text);
+  processAndSpeak(text);
+}
+textInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendTextMessage(); });
+
+function toggleMic() {
+  if (isListening) { stopListening(); }
+  else if (isProcessing || isSpeaking) { return; }
+  else { startListening(); }
+}
+
+function startListening() {
+  if (!speechSupported) {
+    setStatus('error', 'Voice not supported in this browser. Type instead.');
+    setTimeout(() => setStatus('idle', 'Type your message'), 2000);
+    textInput.focus(); return;
+  }
+  try {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.continuous = false; recognition.interimResults = false; recognition.lang = 'en-US';
+    recognition.onresult = function(event) { const text = event.results[0][0].transcript; addMessage('user', text); processAndSpeak(text); };
+    recognition.onerror = function(event) {
+      if (event.error === 'not-allowed') { setStatus('error', 'Microphone blocked. Allow mic in browser settings.'); }
+      else if (event.error === 'no-speech') { setStatus('idle', 'Tap the mic or type'); }
+      else { setStatus('error', 'Error: ' + event.error); }
+      setTimeout(function() { if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type'); }, 2000);
+    };
+    recognition.onend = function() { if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type'); };
+    recognition.start(); isListening = true;
+    setStatus('listening', 'Listening...');
+  } catch (e) {
+    setStatus('error', 'Could not start mic. Use text input.');
+    setTimeout(function() { setStatus('idle', 'Type your message'); }, 2000);
+  }
+}
+function stopListening() {
+  isListening = false;
+  if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
+  if (!isProcessing && !isSpeaking) setStatus('idle', 'Tap the mic or type');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); toggleMic(); }
+});
+
+// ===== Init =====
+if (document.getElementById('mainUI').style.display !== 'none') {
+  addMessage('assistant', "Hello Fahim! I'm your LeadRescuePro voice assistant. Tap the microphone and speak, or type below.");
+  setTimeout(function() { setStatus('idle', 'Tap the mic or type'); }, 300);
+  // Check backend
+  fetch(API_BASE + '/health').then(r => r.json()).then(d => {
+    if (d.status === 'ok') {
+      document.getElementById('tunnelStatus').className = 'tunnel-status online';
+      document.getElementById('tunnelStatus').textContent = '⬤ Connected';
+    }
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
