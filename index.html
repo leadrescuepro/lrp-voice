@@ -1,443 +1,501 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LeadRescuePro Voice</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#0a0e17;color:#c8d6e5;
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
-}
-.container{max-width:480px;width:100%;text-align:center}
-.header{margin-bottom:32px}
-.header h1{font-size:22px;font-weight:700;color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,0.15);letter-spacing:1px}
-.header p{font-size:13px;color:#5a7a9a;margin-top:4px}
-
-#pg{
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
-  border:1px solid #1a2a44;border-radius:16px;padding:40px 24px
-}
-#pg .lk{font-size:48px;margin-bottom:16px}
-#pg h2{font-size:18px;color:#00d4ff;margin-bottom:8px}
-#pg p{font-size:13px;color:#5a7a9a;margin-bottom:24px}
-.pg{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
-.pg input{
-  width:52px;height:60px;text-align:center;
-  background:#0a0e17;border:2px solid #1a2a44;border-radius:8px;
-  color:#00d4ff;font-size:26px;font-weight:700;
-  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none
-}
-.pg input:focus{border-color:#00d4ff}
-.pg input.f{border-color:#2ed573}
-.pe{color:#ff4757;font-size:13px;min-height:20px;margin-bottom:4px}
-#pg button{
-  padding:14px 48px;background:linear-gradient(135deg,#00d4ff 0%,#0088cc 100%);
-  border:none;border-radius:8px;color:#fff;font-weight:700;
-  font-size:16px;cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent
-}
-#main{display:none}
-.sd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-.sd.i{background:#5a7a9a}
-.sd.ls{background:#00d4ff;animation:pl 1.5s infinite}
-.sd.pr{background:#ffa502}
-.sd.sp{background:#2ed573;animation:pl 1.5s infinite}
-.sd.er{background:#ff4757}
-@keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
-
-.mb{
-  width:130px;height:130px;border-radius:50%;
-  border:3px solid #1a2a44;
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  margin:24px auto;transition:all .3s;position:relative;
-  box-shadow:0 0 30px rgba(0,212,255,.05);-webkit-tap-highlight-color:transparent
-}
-.mb svg{width:52px;height:52px;fill:#5a7a9a;transition:fill .3s}
-.mb.ac{border-color:#00d4ff;box-shadow:0 0 50px rgba(0,212,255,.25);animation:br 1.5s ease-in-out infinite}
-.mb.ac svg{fill:#00d4ff}
-.mb.pr{border-color:#ffa502}
-.mb.pr svg{fill:#ffa502}
-.mb.sp{border-color:#2ed573;box-shadow:0 0 40px rgba(46,213,115,.2)}
-.mb.sp svg{fill:#2ed573}
-@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-
-.st{font-size:14px;color:#5a7a9a;margin:8px 0 24px;min-height:20px}
-.ms{
-  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
-  border:1px solid #1a2a44;border-radius:12px;padding:16px;
-  margin-bottom:12px;min-height:50px;text-align:left;font-size:14px;line-height:1.6
-}
-.ms .lb{font-size:11px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.ms .tx.u{color:#00d4ff}
-.ms .tx.h{color:#2ed573}
-.cv{max-height:320px;overflow-y:auto;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:#1a2a44 transparent}
-.cv::-webkit-scrollbar{width:4px}
-.cv::-webkit-scrollbar-thumb{background:#1a2a44;border-radius:2px}
-.cl{display:flex;gap:12px;justify-content:center;margin-top:16px}
-.cl button{
-  padding:10px 20px;border-radius:8px;border:1px solid #1a2a44;
-  background:#11192e;color:#5a7a9a;font-size:13px;cursor:pointer;transition:all .2s
-}
-.tr{display:flex;gap:8px;margin-top:12px}
-.tr input{
-  flex:1;padding:12px 16px;background:#11192e;border:1px solid #1a2a44;
-  border-radius:8px;color:#c8d6e5;font-size:14px;outline:none
-}
-.tr input:focus{border-color:#00d4ff}
-.tr button{
-  padding:12px 24px;background:#1a3a5a;border:1px solid #2a4a6a;
-  border-radius:8px;color:#00d4ff;font-weight:600;cursor:pointer
-}
-.ht{font-size:12px;color:#3a4a5a;margin-top:16px}
-.sl{font-size:11px;margin-top:20px}
-.sl.ok{color:#2ed573}
-.sl.no{color:#ff4757}
-.sl.ch{color:#ffa502}
-audio{display:none}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="header">
-    <h1>LeadRescuePro</h1>
-    <p>Voice Assistant</p>
-  </div>
-
-  <div id="pg">
-    <div class="lk">🔒</div>
-    <h2>Access Required</h2>
-    <p>Enter PIN to continue</p>
-    <div class="pg" id="pi">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="0">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="1">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="2">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="3">
-    </div>
-    <div class="pe" id="pe"></div>
-    <button id="ub">Unlock</button>
-  </div>
-
-  <div id="main">
-    <div class="st">
-      <span class="sd i" id="dot"></span>
-      <span id="lbl">Ready</span>
-    </div>
-
-    <button class="mb" id="mic">
-      <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-    </button>
-
-    <div class="cv" id="cv"></div>
-
-    <div class="tr">
-      <input type="text" id="ti" placeholder="Type a message..." autocomplete="off" disabled>
-      <button id="sb">Send</button>
-    </div>
-
-    <div class="cl">
-      <button id="cb">Clear</button>
-      <button id="smartToggle">🧠 Smart</button>
-      <button id="rtToggle" style="border-color:#2ed573">🔴 Real-Time</button>
-    </div>
-
-    <div class="ht">Tap the mic and speak, or type below</div>
-    <div id="modeIndicator" class="sl ch" style="font-size:10px;color:#5a7a9a;margin-top:4px">⚡ Browser STT</div>
-    <div class="sl" id="cs">⬤ Connecting...</div>
-  </div>
-
-  <audio id="ap"></audio>
-</div>
-
-<script>
-(function(){
-"use strict";
-var P='4791',pg=document.getElementById('pg'),mu=document.getElementById('main');
-var pe=document.getElementById('pe'),ub=document.getElementById('ub');
-var pis=document.querySelectorAll('.pd'),cs=document.getElementById('cs');
-
-// Check stored PIN or URL param
-var params=new URLSearchParams(window.location.search);
-if(localStorage.getItem('p')==='ok'||params.get('p')==='4791'){
-  localStorage.setItem('p','ok');boot();
-}else{
-  setupPin();
-}
-
-function gv(){
-  var v='';
-  for(var i=0;i<pis.length;i++)v+=pis[i].value||'';
-  return v;
-}
-
-function setupPin(){
-  for(var i=0;i<pis.length;i++){
-    pis[i].addEventListener('input',function(){
-      this.value=this.value.replace(/[^0-9]/g,'');
-      if(this.value.length>1)this.value=this.value.slice(-1);
-      if(this.value){
-        this.classList.add('f');
-        var idx=parseInt(this.getAttribute('data-idx'));
-        if(idx<pis.length-1){pis[idx+1].focus();}
-        else{unlock();}
-      }else{this.classList.remove('f');}
-    });
-    pis[i].addEventListener('keydown',function(e){
-      var idx=parseInt(this.getAttribute('data-idx'));
-      if(e.key==='Backspace'&&!this.value&&idx>0)pis[idx-1].focus();
-      if(e.key==='Enter'||e.key==='Go'||e.key==='Done'){e.preventDefault();unlock();}
-    });
-  }
-  ub.addEventListener('click',function(e){e.preventDefault();unlock();});
-  ub.addEventListener('touchend',function(e){e.preventDefault();unlock();});
-  setTimeout(function(){pis[0].focus();},300);
-}
-
-function unlock(){
-  if(gv()!==P){
-    pe.textContent='Wrong PIN';
-    for(var i=0;i<pis.length;i++){pis[i].value='';pis[i].classList.remove('f');}
-    pis[0].focus();return;
-  }
-  localStorage.setItem('p','ok');boot();
-}
-
-function boot(){
-  pg.style.display='none';mu.style.display='block';
-  document.getElementById('ti').disabled=false;
-  setTimeout(function(){document.getElementById('ti').focus();},200);
-  addMsg('h','Hello Fahim! Tap the mic or type below.');
-  setSt('i','Tap the mic or type');
-  // Don't block UI on backend check — try silently
-  checkB();
-}
-
-// Short IDs
-function $(id){return document.getElementById(id);}
-var dot=$('dot'),lbl=$('lbl'),mb=$('mic'),cv=$('cv'),ti=$('ti');
-var ls=false,pr=false,sp=false,rc=null;
-var hs=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
-var ap=document.getElementById('ap');
-var xo=window.location.hostname.indexOf('github.io')!==-1||window.location.hostname.indexOf('pages.dev')!==-1;
-var B=xo?'https://lrp-voice.loca.lt':window.location.origin;
-
-function hd(){return{'Content-Type':'application/json','bypass-tunnel-reminder':'true'};}
-
-function setSt(s,t){
-  dot.className='sd '+s;mb.className='mb';
-  lbl.textContent=t;ls=s==='ls';pr=s==='pr';sp=s==='sp';
-  if(s==='ls')mb.classList.add('ac');
-  else if(s==='pr')mb.classList.add('pr');
-  else if(s==='sp')mb.classList.add('sp');
-}
-
-function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-
-function addMsg(r,t){
-  var d=document.createElement('div');d.className='ms';
-  var w=r==='u'?'You':'LeadRescuePro';
-  var c=r==='u'?'u':'h';
-  d.innerHTML='<div class="lb">'+w+'</div><div class="tx '+c+'">'+esc(t)+'</div>';
-  cv.appendChild(d);cv.scrollTop=cv.scrollHeight;
-}
-
-// TTS — backend generates real audio
-function spk(t){
-  return new Promise(function(r){
-    if(!t){setSt('i','Tap the mic or type');r();return;}
-    setSt('sp','Speaking...');
-    var x=new XMLHttpRequest();
-    x.open('POST',B+'/api/tts?_='+Date.now(),true);
-    x.setRequestHeader('Content-Type','application/json');
-    x.setRequestHeader('bypass-tunnel-reminder','true');
-    x.responseType='json';
-    x.onload=function(){
-      if(x.status===200&&x.response&&x.response.audio_url){
-        var u=(xo?'https://lrp-voice.loca.lt':'')+x.response.audio_url;
-        ap.src=u;
-        ap.onended=function(){setSt('i','Tap the mic or type');r();};
-        ap.onerror=function(){setSt('i','Tap the mic or type');r();};
-        ap.play().catch(function(){setSt('i','Tap the mic or type');r();});
-      }else{setSt('i','Tap the mic or type');r();}
-    };
-    x.onerror=function(){setSt('i','Tap the mic or type');r();};
-    x.send(JSON.stringify({text:t}));
-  });
-}
-
-// Silent backend check — doesn't block UI
-async function checkB(){
-  cs.className='sl ch';cs.textContent='⬤ Connecting...';
-  try{
-    var r=await fetch(B+'/health?_='+Date.now(),{headers:hd()});
-    var ct=r.headers.get('content-type')||'';
-    if(ct.indexOf('json')!==-1){
-      var d=await r.json();
-      if(d&&d.status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
-    }
-  }catch(e){}
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
-  // Retry silently every 10 seconds
-  setTimeout(checkB,10000);
-}
-
-// API call with retry
-async function api(t){
-  setSt('pr','Thinking...');
-  var u=B+'/api/chat?_='+Date.now();
-  var b=JSON.stringify({message:t,session_id:'v_'+Date.now()});
-  for(var i=0;i<3;i++){
-    try{
-      var r=await fetch(u,{method:'POST',headers:hd(),body:b});
-      var ct=r.headers.get('content-type')||'';
-      if(ct.indexOf('json')===-1)throw 'c';
-      if(!r.ok)throw 'h'+r.status;
-      var d=await r.json();
-      cs.className='sl ok';cs.textContent='⬤ Connected';
-      return d.response;
-    }catch(e){
-      if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
-    }
-  }
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
-  setTimeout(checkB,10000);
-  return "Backend offline. Please try again.";
-}
-
-async function pns(t){
-  var r=await api(t);
-  addMsg('h',r);
-  if(r.indexOf('offline')===-1)await spk(r);
-}
-
-// Text
-function stx(){
-  if(pr||sp)return;
-  var t=ti.value.trim();if(!t)return;
-  ti.value='';addMsg('u',t);pns(t);
-}
-
-// Mic
-function tm(){if(ls){sm();}else if(!pr&&!sp){stm();}}
-
-function stm(){
-  if(!hs){setSt('er','Voice input not supported');setTimeout(function(){setSt('i','Type instead');},2000);ti.focus();return;}
-  try{
-    // Check if smart transcription mode is active
-    if(window._smartMode){
-      stmSmart();
-      return;
-    }
-    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    rc=new SR();rc.continuous=false;rc.interimResults=false;rc.lang='en-US';
-    rc.onresult=function(e){var t=e.results[0][0].transcript;addMsg('u',t);pns(t);};
-    rc.onerror=function(e){
-      if(e.error==='not-allowed')setSt('er','Mic blocked');
-      else if(e.error==='no-speech'){}
-      else setSt('er',e.error);
-      setTimeout(function(){if(!pr&&!sp)setSt('i','Tap mic or type');},2000);
-    };
-    rc.onend=function(){if(!pr&&!sp)setSt('i','Tap mic or type');};
-    rc.start();setSt('ls','Listening...');
-  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
-}
-
-// Smart transcription: record audio → send to backend for Whisper+DeepSeek
-var _mediaRecorder=null,_audioChunks=[],_smartStream=null;
-function stmSmart(){
-  setSt('ls','Listening...');
-  _audioChunks=[];
-  try{
-    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-      _smartStream=stream;
-      _mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});
-      _mediaRecorder.ondataavailable=function(e){if(e.data.size>0)_audioChunks.push(e.data);};
-      _mediaRecorder.onstop=function(){
-        _smartStream.getTracks().forEach(function(t){t.stop();});
-        var blob=new Blob(_audioChunks,{type:'audio/webm'});
-        setSt('pr','Transcribing...');
-        var fd=new FormData();
-        fd.append('file',blob,'recording.webm');
-        var xhr=new XMLHttpRequest();
-        xhr.open('POST',B+'/api/transcribe',true);
-        xhr.setRequestHeader('bypass-tunnel-reminder','true');
-        xhr.responseType='json';
-        xhr.onload=function(){
-          if(xhr.status===200&&xhr.response){
-            var t=xhr.response.transcript||xhr.response.whisper_raw||'';
-            if(t){addMsg('u',t);pns(t);}
-            else{setSt('i','Tap mic or type');}
-          }else{setSt('i','Tap mic or type');}
-        };
-        xhr.onerror=function(){setSt('i','Tap mic or type');};
-        xhr.send(fd);
-      };
-      _mediaRecorder.start();
-      // Auto-stop after 10 seconds of silence
-      setTimeout(function(){if(_mediaRecorder&&_mediaRecorder.state==='recording')_mediaRecorder.stop();},10000);
-    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Type');},2000);});
-  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
-}
-
-function sm(){
-  if(_mediaRecorder&&_mediaRecorder.state==='recording'){_mediaRecorder.stop();_mediaRecorder=null;return;}
-  if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');
-}
-
-// Events
-mb.addEventListener('click',function(e){e.preventDefault();tm();});
-mb.addEventListener('touchend',function(e){e.preventDefault();tm();});
-document.getElementById('sb').addEventListener('click',function(e){e.preventDefault();stx();});
-ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
-document.getElementById('cb').addEventListener('click',function(e){
-  e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
-});
-document.getElementById('smartToggle').addEventListener('click',function(e){
-  e.preventDefault();
-  window._smartMode=!window._smartMode;
-  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
-  this.style.borderColor=window._smartMode?'#00d4ff':'';
-  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription (Whisper+DeepSeek)':'⚡ Browser STT';
-});
-document.getElementById('rtToggle').addEventListener('click',function(e){
-  e.preventDefault();
-  window._rtMode=!window._rtMode;
-  this.textContent=window._rtMode?'🟢 Real-Time ON':'🔴 Real-Time';
-  this.style.borderColor=window._rtMode?'#2ed573':'';
-  if(window._rtMode){
-    document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice (WebSocket streaming)';
-    // Open real-time WebSocket connection
-    var wsUrl=window.location.origin.replace('http','ws')+'/ws';
-    window._rtWs=new WebSocket(wsUrl);
-    window._rtWs.onopen=function(){
-      cs.className='sl ok';cs.textContent='⬤ Real-Time';
-      addMsg('h','Real-Time mode active. Speak and I will respond instantly.');
-    };
-    window._rtWs.onerror=function(){
-      addMsg('h','Real-Time unavailable. Switch back to normal mode.');
-      window._rtMode=false;
-      document.getElementById('rtToggle').textContent='🔴 Real-Time';
-      document.getElementById('rtToggle').style.borderColor='';
-      document.getElementById('modeIndicator').textContent='⚡ Browser STT';
-    };
-    window._rtWs.onclose=function(){
-      if(window._rtMode){
-        cs.className='sl no';cs.textContent='⬤ Disconnected';
-      }
-    };
-  }else{
-    if(window._rtWs){window._rtWs.close();window._rtWs=null;}
-    cs.className='sl ch';cs.textContent='⬤ Connecting...';
-    document.getElementById('modeIndicator').textContent='⚡ Browser STT';
-    checkB();
-  }
-});
-document.addEventListener('keydown',function(e){
-  if(e.target.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();tm();}
-});
-})();
-</script>
-</body>
-</html>
+     1|<!DOCTYPE html>
+     2|<html lang="en">
+     3|<head>
+     4|<meta charset="UTF-8">
+     5|<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+     6|<title>LeadRescuePro Voice</title>
+     7|<style>
+     8|*{margin:0;padding:0;box-sizing:border-box}
+     9|body{
+    10|  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    11|  background:#0a0e17;color:#c8d6e5;
+    12|  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
+    13|}
+    14|.container{max-width:480px;width:100%;text-align:center}
+    15|.header{margin-bottom:32px}
+    16|.header h1{font-size:22px;font-weight:700;color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,0.15);letter-spacing:1px}
+    17|.header p{font-size:13px;color:#5a7a9a;margin-top:4px}
+    18|
+    19|#pg{
+    20|  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+    21|  border:1px solid #1a2a44;border-radius:16px;padding:40px 24px
+    22|}
+    23|#pg .lk{font-size:48px;margin-bottom:16px}
+    24|#pg h2{font-size:18px;color:#00d4ff;margin-bottom:8px}
+    25|#pg p{font-size:13px;color:#5a7a9a;margin-bottom:24px}
+    26|.pg{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+    27|.pg input{
+    28|  width:52px;height:60px;text-align:center;
+    29|  background:#0a0e17;border:2px solid #1a2a44;border-radius:8px;
+    30|  color:#00d4ff;font-size:26px;font-weight:700;
+    31|  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none
+    32|}
+    33|.pg input:focus{border-color:#00d4ff}
+    34|.pg input.f{border-color:#2ed573}
+    35|.pe{color:#ff4757;font-size:13px;min-height:20px;margin-bottom:4px}
+    36|#pg button{
+    37|  padding:14px 48px;background:linear-gradient(135deg,#00d4ff 0%,#0088cc 100%);
+    38|  border:none;border-radius:8px;color:#fff;font-weight:700;
+    39|  font-size:16px;cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent
+    40|}
+    41|#main{display:none}
+    42|.sd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+    43|.sd.i{background:#5a7a9a}
+    44|.sd.ls{background:#00d4ff;animation:pl 1.5s infinite}
+    45|.sd.pr{background:#ffa502}
+    46|.sd.sp{background:#2ed573;animation:pl 1.5s infinite}
+    47|.sd.er{background:#ff4757}
+    48|@keyframes pl{0%,100%{opacity:1}50%{opacity:.4}}
+    49|
+    50|.mb{
+    51|  width:130px;height:130px;border-radius:50%;
+    52|  border:3px solid #1a2a44;
+    53|  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+    54|  cursor:pointer;display:flex;align-items:center;justify-content:center;
+    55|  margin:24px auto;transition:all .3s;position:relative;
+    56|  box-shadow:0 0 30px rgba(0,212,255,.05);-webkit-tap-highlight-color:transparent
+    57|}
+    58|.mb svg{width:52px;height:52px;fill:#5a7a9a;transition:fill .3s}
+    59|.mb.ac{border-color:#00d4ff;box-shadow:0 0 50px rgba(0,212,255,.25);animation:br 1.5s ease-in-out infinite}
+    60|.mb.ac svg{fill:#00d4ff}
+    61|.mb.pr{border-color:#ffa502}
+    62|.mb.pr svg{fill:#ffa502}
+    63|.mb.sp{border-color:#2ed573;box-shadow:0 0 40px rgba(46,213,115,.2)}
+    64|.mb.sp svg{fill:#2ed573}
+    65|@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+    66|
+    67|.st{font-size:14px;color:#5a7a9a;margin:8px 0 24px;min-height:20px}
+    68|.ms{
+    69|  background:linear-gradient(135deg,#11192e 0%,#0f1629 100%);
+    70|  border:1px solid #1a2a44;border-radius:12px;padding:16px;
+    71|  margin-bottom:12px;min-height:50px;text-align:left;font-size:14px;line-height:1.6
+    72|}
+    73|.ms .lb{font-size:11px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    74|.ms .tx.u{color:#00d4ff}
+    75|.ms .tx.h{color:#2ed573}
+    76|.cv{max-height:320px;overflow-y:auto;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:#1a2a44 transparent}
+    77|.cv::-webkit-scrollbar{width:4px}
+    78|.cv::-webkit-scrollbar-thumb{background:#1a2a44;border-radius:2px}
+    79|.cl{display:flex;gap:12px;justify-content:center;margin-top:16px}
+    80|.cl button{
+    81|  padding:10px 20px;border-radius:8px;border:1px solid #1a2a44;
+    82|  background:#11192e;color:#5a7a9a;font-size:13px;cursor:pointer;transition:all .2s
+    83|}
+    84|.tr{display:flex;gap:8px;margin-top:12px}
+    85|.tr input{
+    86|  flex:1;padding:12px 16px;background:#11192e;border:1px solid #1a2a44;
+    87|  border-radius:8px;color:#c8d6e5;font-size:14px;outline:none
+    88|}
+    89|.tr input:focus{border-color:#00d4ff}
+    90|.tr button{
+    91|  padding:12px 24px;background:#1a3a5a;border:1px solid #2a4a6a;
+    92|  border-radius:8px;color:#00d4ff;font-weight:600;cursor:pointer
+    93|}
+    94|.ht{font-size:12px;color:#3a4a5a;margin-top:16px}
+    95|.sl{font-size:11px;margin-top:20px}
+    96|.sl.ok{color:#2ed573}
+    97|.sl.no{color:#ff4757}
+    98|.sl.ch{color:#ffa502}
+    99|audio{display:none}
+   100|</style>
+   101|</head>
+   102|<body>
+   103|<div class="container">
+   104|  <div class="header">
+   105|    <h1>LeadRescuePro</h1>
+   106|    <p>Voice Assistant</p>
+   107|  </div>
+   108|
+   109|  <div id="pg">
+   110|    <div class="lk">🔒</div>
+   111|    <h2>Access Required</h2>
+   112|    <p>Enter PIN to continue</p>
+   113|    <div class="pg" id="pi">
+   114|      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="0">
+   115|      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="1">
+   116|      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="2">
+   117|      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" class="pd" data-idx="3">
+   118|    </div>
+   119|    <div class="pe" id="pe"></div>
+   120|    <button id="ub">Unlock</button>
+   121|  </div>
+   122|
+   123|  <div id="main">
+   124|    <div class="st">
+   125|      <span class="sd i" id="dot"></span>
+   126|      <span id="lbl">Ready</span>
+   127|    </div>
+   128|
+   129|    <button class="mb" id="mic">
+   130|      <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+   131|    </button>
+   132|
+   133|    <div class="cv" id="cv"></div>
+   134|
+   135|    <div class="tr">
+   136|      <input type="text" id="ti" placeholder="Type a message..." autocomplete="off" disabled>
+   137|      <button id="sb">Send</button>
+   138|    </div>
+   139|
+   140|    <div class="cl">
+   141|      <button id="cb">Clear</button>
+   142|      <button id="smartToggle">🧠 Smart</button>
+   143|      <button id="rtToggle" style="border-color:#2ed573">🔴 Real-Time</button>
+   144|    </div>
+   145|
+   146|    <div class="ht">Tap the mic and speak, or type below</div>
+   147|    <div id="modeIndicator" class="sl ch" style="font-size:10px;color:#5a7a9a;margin-top:4px">⚡ Browser STT</div>
+   148|    <div class="sl" id="cs">⬤ Connecting...</div>
+   149|  </div>
+   150|
+   151|  <audio id="ap"></audio>
+   152|</div>
+   153|
+   154|<script>
+   155|(function(){
+   156|"use strict";
+   157|var P='4791',pg=document.getElementById('pg'),mu=document.getElementById('main');
+   158|var pe=document.getElementById('pe'),ub=document.getElementById('ub');
+   159|var pis=document.querySelectorAll('.pd'),cs=document.getElementById('cs');
+   160|
+   161|// Check stored PIN or URL param
+   162|var params=new URLSearchParams(window.location.search);
+   163|if(localStorage.getItem('p')==='ok'||params.get('p')==='4791'){
+   164|  localStorage.setItem('p','ok');boot();
+   165|}else{
+   166|  setupPin();
+   167|}
+   168|
+   169|function gv(){
+   170|  var v='';
+   171|  for(var i=0;i<pis.length;i++)v+=pis[i].value||'';
+   172|  return v;
+   173|}
+   174|
+   175|function setupPin(){
+   176|  for(var i=0;i<pis.length;i++){
+   177|    pis[i].addEventListener('input',function(){
+   178|      this.value=this.value.replace(/[^0-9]/g,'');
+   179|      if(this.value.length>1)this.value=this.value.slice(-1);
+   180|      if(this.value){
+   181|        this.classList.add('f');
+   182|        var idx=parseInt(this.getAttribute('data-idx'));
+   183|        if(idx<pis.length-1){pis[idx+1].focus();}
+   184|        else{unlock();}
+   185|      }else{this.classList.remove('f');}
+   186|    });
+   187|    pis[i].addEventListener('keydown',function(e){
+   188|      var idx=parseInt(this.getAttribute('data-idx'));
+   189|      if(e.key==='Backspace'&&!this.value&&idx>0)pis[idx-1].focus();
+   190|      if(e.key==='Enter'||e.key==='Go'||e.key==='Done'){e.preventDefault();unlock();}
+   191|    });
+   192|  }
+   193|  ub.addEventListener('click',function(e){e.preventDefault();unlock();});
+   194|  ub.addEventListener('touchend',function(e){e.preventDefault();unlock();});
+   195|  setTimeout(function(){pis[0].focus();},300);
+   196|}
+   197|
+   198|function unlock(){
+   199|  if(gv()!==P){
+   200|    pe.textContent='Wrong PIN';
+   201|    for(var i=0;i<pis.length;i++){pis[i].value='';pis[i].classList.remove('f');}
+   202|    pis[0].focus();return;
+   203|  }
+   204|  localStorage.setItem('p','ok');boot();
+   205|}
+   206|
+   207|function boot(){
+   208|  pg.style.display='none';mu.style.display='block';
+   209|  document.getElementById('ti').disabled=false;
+   210|  setTimeout(function(){document.getElementById('ti').focus();},200);
+   211|  addMsg('h','Hello Fahim! Tap the mic or type below.');
+   212|  setSt('i','Tap the mic or type');
+   213|  // Don't block UI on backend check — try silently
+   214|  checkB();
+   215|}
+   216|
+   217|// Short IDs
+   218|function $(id){return document.getElementById(id);}
+   219|var dot=$('dot'),lbl=$('lbl'),mb=$('mic'),cv=$('cv'),ti=$('ti');
+   220|var ls=false,pr=false,sp=false,rc=null;
+   221|var hs=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+   222|var ap=document.getElementById('ap');
+   223|var xo=window.location.hostname.indexOf('github.io')!==-1||window.location.hostname.indexOf('pages.dev')!==-1;
+   224|var B=xo?'https://lrp-voice.loca.lt':window.location.origin;
+   225|
+   226|function hd(){return{'Content-Type':'application/json','bypass-tunnel-reminder':'true'};}
+   227|
+   228|function setSt(s,t){
+   229|  dot.className='sd '+s;mb.className='mb';
+   230|  lbl.textContent=t;ls=s==='ls';pr=s==='pr';sp=s==='sp';
+   231|  if(s==='ls')mb.classList.add('ac');
+   232|  else if(s==='pr')mb.classList.add('pr');
+   233|  else if(s==='sp')mb.classList.add('sp');
+   234|}
+   235|
+   236|function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+   237|
+   238|function addMsg(r,t){
+   239|  var d=document.createElement('div');d.className='ms';
+   240|  var w=r==='u'?'You':'LeadRescuePro';
+   241|  var c=r==='u'?'u':'h';
+   242|  d.innerHTML='<div class="lb">'+w+'</div><div class="tx '+c+'">'+esc(t)+'</div>';
+   243|  cv.appendChild(d);cv.scrollTop=cv.scrollHeight;
+   244|}
+   245|
+   246|// TTS — backend generates real audio
+   247|function spk(t){
+   248|  return new Promise(function(r){
+   249|    if(!t){setSt('i','Tap the mic or type');r();return;}
+   250|    setSt('sp','Speaking...');
+   251|    var x=new XMLHttpRequest();
+   252|    x.open('POST',B+'/api/tts?_='+Date.now(),true);
+   253|    x.setRequestHeader('Content-Type','application/json');
+   254|    x.setRequestHeader('bypass-tunnel-reminder','true');
+   255|    x.responseType='json';
+   256|    x.onload=function(){
+   257|      if(x.status===200&&x.response&&x.response.audio_url){
+   258|        var u=(xo?'https://lrp-voice.loca.lt':'')+x.response.audio_url;
+   259|        ap.src=u;
+   260|        ap.onended=function(){setSt('i','Tap the mic or type');r();};
+   261|        ap.onerror=function(){setSt('i','Tap the mic or type');r();};
+   262|        ap.play().catch(function(){setSt('i','Tap the mic or type');r();});
+   263|      }else{setSt('i','Tap the mic or type');r();}
+   264|    };
+   265|    x.onerror=function(){setSt('i','Tap the mic or type');r();};
+   266|    x.send(JSON.stringify({text:t}));
+   267|  });
+   268|}
+   269|
+   270|// Silent backend check — doesn't block UI
+   271|async function checkB(){
+   272|  cs.className='sl ch';cs.textContent='⬤ Connecting...';
+   273|  try{
+   274|    var r=await fetch(B+'/health?_='+Date.now(),{headers:hd()});
+   275|    var ct=r.headers.get('content-type')||'';
+   276|    if(ct.indexOf('json')!==-1){
+   277|      var d=await r.json();
+   278|      if(d&&d.status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
+   279|    }
+   280|  }catch(e){}
+   281|  cs.className='sl no';cs.textContent='⬤ Backend offline';
+   282|  // Retry silently every 10 seconds
+   283|  setTimeout(checkB,10000);
+   284|}
+   285|
+   286|// API call with retry
+   287|async function api(t){
+   288|  setSt('pr','Thinking...');
+   289|  var u=B+'/api/chat?_='+Date.now();
+   290|  var b=JSON.stringify({message:t,session_id:'v_'+Date.now()});
+   291|  for(var i=0;i<3;i++){
+   292|    try{
+   293|      var r=await fetch(u,{method:'POST',headers:hd(),body:b});
+   294|      var ct=r.headers.get('content-type')||'';
+   295|      if(ct.indexOf('json')===-1)throw 'c';
+   296|      if(!r.ok)throw 'h'+r.status;
+   297|      var d=await r.json();
+   298|      cs.className='sl ok';cs.textContent='⬤ Connected';
+   299|      return d.response;
+   300|    }catch(e){
+   301|      if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
+   302|    }
+   303|  }
+   304|  cs.className='sl no';cs.textContent='⬤ Backend offline';
+   305|  setTimeout(checkB,10000);
+   306|  return "Backend offline. Please try again.";
+   307|}
+   308|
+   309|async function pns(t){
+   310|  var r=await api(t);
+   311|  addMsg('h',r);
+   312|  if(r.indexOf('offline')===-1)await spk(r);
+   313|}
+   314|
+   315|// Text
+   316|function stx(){
+   317|  if(pr||sp)return;
+   318|  var t=ti.value.trim();if(!t)return;
+   319|  ti.value='';addMsg('u',t);pns(t);
+   320|}
+   321|
+   322|// Mic
+   323|function tm(){if(ls){sm();}else if(!pr&&!sp){stm();}}
+   324|
+   325|function stm(){
+   326|  if(!hs){setSt('er','Voice input not supported');setTimeout(function(){setSt('i','Type instead');},2000);ti.focus();return;}
+   327|  try{
+   328|    // Check if smart transcription mode is active
+   329|    if(window._smartMode){
+   330|      stmSmart();
+   331|      return;
+   332|    }
+   333|    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+   334|    rc=new SR();rc.continuous=false;rc.interimResults=false;rc.lang='en-US';
+   335|    rc.onresult=function(e){var t=e.results[0][0].transcript;addMsg('u',t);pns(t);};
+   336|    rc.onerror=function(e){
+   337|      if(e.error==='not-allowed')setSt('er','Mic blocked');
+   338|      else if(e.error==='no-speech'){}
+   339|      else setSt('er',e.error);
+   340|      setTimeout(function(){if(!pr&&!sp)setSt('i','Tap mic or type');},2000);
+   341|    };
+   342|    rc.onend=function(){if(!pr&&!sp)setSt('i','Tap mic or type');};
+   343|    rc.start();setSt('ls','Listening...');
+   344|  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
+   345|}
+   346|
+   347|// Smart transcription: record audio → send to backend for Whisper+DeepSeek
+   348|var _mediaRecorder=null,_audioChunks=[],_smartStream=null;
+   349|function stmSmart(){
+   350|  setSt('ls','Listening...');
+   351|  _audioChunks=[];
+   352|  try{
+   353|    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+   354|      _smartStream=stream;
+   355|      _mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm;codecs=opus'});
+   356|      _mediaRecorder.ondataavailable=function(e){if(e.data.size>0)_audioChunks.push(e.data);};
+   357|      _mediaRecorder.onstop=function(){
+   358|        _smartStream.getTracks().forEach(function(t){t.stop();});
+   359|        var blob=new Blob(_audioChunks,{type:'audio/webm'});
+   360|        setSt('pr','Transcribing...');
+   361|        var fd=new FormData();
+   362|        fd.append('file',blob,'recording.webm');
+   363|        var xhr=new XMLHttpRequest();
+   364|        xhr.open('POST',B+'/api/transcribe',true);
+   365|        xhr.setRequestHeader('bypass-tunnel-reminder','true');
+   366|        xhr.responseType='json';
+   367|        xhr.onload=function(){
+   368|          if(xhr.status===200&&xhr.response){
+   369|            var t=xhr.response.transcript||xhr.response.whisper_raw||'';
+   370|            if(t){addMsg('u',t);pns(t);}
+   371|            else{setSt('i','Tap mic or type');}
+   372|          }else{setSt('i','Tap mic or type');}
+   373|        };
+   374|        xhr.onerror=function(){setSt('i','Tap mic or type');};
+   375|        xhr.send(fd);
+   376|      };
+   377|      _mediaRecorder.start();
+   378|      // Auto-stop after 10 seconds of silence
+   379|      setTimeout(function(){if(_mediaRecorder&&_mediaRecorder.state==='recording')_mediaRecorder.stop();},10000);
+   380|    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Type');},2000);});
+   381|  }catch(e){setSt('er','Mic error');setTimeout(function(){setSt('i','Type');},2000);}
+   382|}
+   383|
+   384|function sm(){
+   385|  if(_mediaRecorder&&_mediaRecorder.state==='recording'){_mediaRecorder.stop();_mediaRecorder=null;return;}
+   386|  if(rc){try{rc.stop();}catch(e){}rc=null;}if(!pr&&!sp)setSt('i','Tap mic or type');
+   387|}
+   388|
+   389|// Events
+   390|mb.addEventListener('click',function(e){e.preventDefault();tm();});
+   391|mb.addEventListener('touchend',function(e){e.preventDefault();tm();});
+   392|document.getElementById('sb').addEventListener('click',function(e){e.preventDefault();stx();});
+   393|ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
+   394|document.getElementById('cb').addEventListener('click',function(e){
+   395|  e.preventDefault();cv.innerHTML='';addMsg('h','Cleared.');
+   396|});
+   397|document.getElementById('smartToggle').addEventListener('click',function(e){
+   398|  e.preventDefault();
+   399|  window._smartMode=!window._smartMode;
+   400|  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
+   401|  this.style.borderColor=window._smartMode?'#00d4ff':'';
+   402|  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription (Whisper+DeepSeek)':'⚡ Browser STT';
+   403|});
+   404|document.getElementById('rtToggle').addEventListener('click',function(e){
+   405|  e.preventDefault();
+   406|  window._rtMode=!window._rtMode;
+   407|  this.textContent=window._rtMode?'🟢 Real-Time ON':'🔴 Real-Time';
+   408|  this.style.borderColor=window._rtMode?'#2ed573':'';
+   409|  if(window._rtMode){
+   410|    document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice (WebSocket streaming)';
+   411|    // Open real-time WebSocket connection to v2 audio agent
+   412|    var wsUrl=window.location.origin.replace('http','ws')+'/v2/ws';
+   413|    window._rtWs=new WebSocket(wsUrl);
+   414|    window._rtWs.onopen=function(){
+   415|      cs.className='sl ok';cs.textContent='⬤ Real-Time';
+   416|      addMsg('h','Real-Time mode active. Hold mic button to talk, release when done.');
+   417|      // Switch mic behavior to hold-to-talk
+   418|      setupRTHoldToTalk();
+   419|    };
+   420|    window._rtWs.onerror=function(){
+   421|      addMsg('h','Real-Time unavailable. Switch back to normal mode.');
+   422|      window._rtMode=false;
+   423|      document.getElementById('rtToggle').textContent='🔴 Real-Time';
+   424|      document.getElementById('rtToggle').style.borderColor='';
+   425|      document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+   426|    };
+   427|    window._rtWs.onclose=function(){
+   428|      if(window._rtMode){
+   429|        cs.className='sl no';cs.textContent='⬤ Disconnected';
+   430|      }
+   431|      window._rtWs=null;
+   432|    };
+   433|  }else{
+   434|    if(window._rtWs){window._rtWs.close();window._rtWs=null;}
+   435|    // Restore normal mic behavior — page reload is simplest
+   436|    document.getElementById('modeIndicator').textContent='⚡ Browser STT';
+   437|    location.reload();
+   438|  }
+   439|});
+   440|// Real-Time hold-to-talk recording
+   441|var _rtRecorder=null,_rtStream=null,_rtChunks=[];
+   442|function setupRTHoldToTalk(){
+   443|  var mbOrig=document.getElementById('mic');
+   444|  if(!mbOrig)return;
+   445|  // Replace mic behavior
+   446|  mbOrig.replaceWith(mbOrig.cloneNode(true));
+   447|  var mb2=document.getElementById('mic');
+   448|  // Clear old listeners — use new var
+   449|  function startRT(){
+   450|    if(!window._rtWs||window._rtWs.readyState!==1){setSt('er','Not connected');return;}
+   451|    _rtChunks=[];
+   452|    navigator.mediaDevices.getUserMedia({audio:{sampleRate:16000,channelCount:1,echoCancellation:true,noiseSuppression:true}})
+   453|    .then(function(s){
+   454|      _rtStream=s;
+   455|      _rtRecorder=new MediaRecorder(s,{mimeType:'audio/webm;codecs=opus'});
+   456|      _rtRecorder.ondataavailable=function(e){if(e.data.size>0)_rtChunks.push(e.data);};
+   457|      _rtRecorder.onstop=function(){
+   458|        _rtStream.getTracks().forEach(function(t){t.stop();});
+   459|        if(_rtChunks.length>0){
+   460|          var blob=new Blob(_rtChunks,{type:'audio/webm'});
+   461|          sendRT(blob);
+   462|        }else{setSt('i','Hold to talk');}
+   463|      };
+   464|      _rtRecorder.start();
+   465|      setSt('ls','Listening...');
+   466|    }).catch(function(){setSt('er','Mic blocked');setTimeout(function(){setSt('i','Hold');},2000);});
+   467|  }
+   468|  function stopRT(){
+   469|    if(_rtRecorder&&_rtRecorder.state==='recording'){_rtRecorder.stop();_rtRecorder=null;}
+   470|  }
+   471|  function sendRT(blob){
+   472|    setSt('pr','Sending...');
+   473|    var reader=new FileReader();
+   474|    reader.onload=function(){
+   475|      if(window._rtWs&&window._rtWs.readyState===1){
+   476|        window._rtWs.send(JSON.stringify({type:'transcribe',audio:reader.result.split(',')[1],format:'webm'}));
+   477|      }
+   478|    };
+   479|    reader.readAsDataURL(blob);
+   480|  }
+   481|  // Set event listeners on the new element
+   482|  mb2.addEventListener('mousedown',function(e){e.preventDefault();startRT();});
+   483|  mb2.addEventListener('mouseup',function(e){e.preventDefault();stopRT();});
+   484|  mb2.addEventListener('mouseleave',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
+   485|  mb2.addEventListener('touchstart',function(e){e.preventDefault();startRT();});
+   486|  mb2.addEventListener('touchend',function(e){e.preventDefault();stopRT();});
+   487|  mb2.addEventListener('touchcancel',function(e){if(_rtRecorder&&_rtRecorder.state==='recording')stopRT();});
+   488|  // Also listen for audio responses
+   489|  window._rtWs.onmessage=function(e){
+   490|    try{
+   491|      var msg=JSON.parse(e.data);
+   492|      if(msg.type==='transcript'){
+   493|        addMsg('u',msg.text);
+   494|      }else if(msg.type==='reply'){
+   495|        addMsg('h',msg.text);
+   496|        setSt('pr','Got reply');
+   497|      }else if(msg.type==='tts'){
+   498|        var ap=document.getElementById('ap');
+   499|        if(ap){
+   500|          ap.src=window.location.origin+msg.url;
+   501|
