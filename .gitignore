@@ -1,0 +1,10 @@
+# secrets
+.env
+*.key
+*.pem
+*token*
+*secret*
+
+# local
+.DS_Store
+Thumbs.db
