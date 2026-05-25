@@ -25,4 +25,8 @@ No public posting, comments, DMs, group joins, account recovery, OTP/CAPTCHA, pa
 
 ## Logo notes
 
-Logo contains a green house/plumbing-style mark with lime roof accent and dark green wordmark `LeadRescuePro`. Tagline visible: `Never miss another plumbing job`.
+Canonical platform logo: `assets/leadrescuepro-logo-canonical.jpg`.
+
+Use this icon-only logo across platforms. It shows a green house/home-service mark with a lime roof, dark green base, four-pane window, and a leaf inside the house. It has no text, so it works well for small avatars, favicons, profile icons, and social account images.
+
+Generated platform sizes are in `assets/` as `leadrescuepro-logo-1024x1024.jpg`, `512x512`, `400x400`, `320x320`, `180x180`, plus `leadrescuepro-favicon-64.png`.
