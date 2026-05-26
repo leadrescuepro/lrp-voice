@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LeadRescuePro Voice</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -205,8 +208,8 @@ audio{display:none}
 
     <!-- Mode buttons -->
     <div class="cl">
-      <button id="smartToggle">🧠 Smart</button>
-      <button id="rtToggle" class="rt">🔴 Real-Time</button>
+      <button id="smartToggle" class="on">🧠 Voice ON</button>
+      <button id="rtToggle" class="rt">🎧 Hold-to-Talk</button>
     </div>
 
     <!-- Chat -->
@@ -218,7 +221,7 @@ audio{display:none}
       <button id="sb"><i class="fas fa-paper-plane"></i></button>
     </div>
 
-    <div class="mode-label" id="modeIndicator">⚡ Browser STT</div>
+    <div class="mode-label" id="modeIndicator">🎙️ Natural Voice Reply</div>
     <div class="mode-label" id="sysModel">Model: OpenAI Codex via Hermes API</div>
   </div>
 
@@ -272,20 +275,23 @@ function unlock(){
 function boot(){
   pg.style.display='none';mu.style.display='block';
   document.getElementById('ti').disabled=false;
-  addMsg('h','Hi! I am ready. Tap the mic or type your message.');
+  addMsg('h','Hi! I am ready. Tap the mic, speak naturally, and I will answer back with voice.');
   setSt('i','Ready');
   checkB();
+  var st=document.getElementById('smartToggle'); if(st){st.textContent='🧠 Voice ON'; st.className='on';}
+  document.getElementById('modeIndicator').textContent='🎙️ Natural Voice Reply';
 }
 
 function $(id){return document.getElementById(id);}
 var dot=null,lbl=$('lbl'),mb=$('mic'),cv=$('cv'),ti=$('ti');
 var orb=document.getElementById('aiOrb');
 var ls=false,pr=false,sp=false,rc=null;
+window._smartMode=true;
 var hs=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
 var ap=document.getElementById('ap');
 var xo=window.location.hostname.indexOf('github.io')!==-1||window.location.hostname.indexOf('pages.dev')!==-1;
-var B=xo?'https://lrp-voice.loca.lt':window.location.origin;
-var WSBASE=xo?'wss://lrp-voice.loca.lt':window.location.origin.replace('http','ws');
+var B='https://lrp-voice.loca.lt';
+var WSBASE='wss://lrp-voice.loca.lt';
 
 function hd(){return{'Content-Type':'application/json','bypass-tunnel-reminder':'true'};}
 
@@ -322,7 +328,7 @@ function spk(t){
         ap.src=u;
         ap.onended=function(){setSt('i','Ready');r();};
         ap.onerror=function(){setSt('i','Ready');r();};
-        ap.play().catch(function(){setSt('i','Ready');r();});
+        ap.play().catch(function(){setSt('i','Tap once to hear reply'); mb.onclick=function(e){e.preventDefault(); ap.play().finally(function(){setSt('i','Ready');r();});};});
       }else{setSt('i','Ready');r();}
     };
     x.onerror=function(){setSt('i','Ready');r();};
@@ -337,7 +343,7 @@ async function checkB(){
     var ct=r.headers.get('content-type')||'';
     if(ct.indexOf('json')!==-1&&(await r.json()).status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
   }catch(e){}
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
+  cs.className='sl no';cs.textContent='⬤ Reconnecting...';
   setTimeout(checkB,10000);
 }
 
@@ -356,7 +362,7 @@ async function api(t){
       if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
     }
   }
-  cs.className='sl no';cs.textContent='⬤ Backend offline';
+  cs.className='sl no';cs.textContent='⬤ Reconnecting...';
   setTimeout(checkB,10000);
   return "Backend offline. I could not reach the voice bridge yet. Try again in a moment.";
 }
@@ -487,9 +493,9 @@ ti.addEventListener('keydown',function(e){if(e.key==='Enter')stx();});
 document.getElementById('smartToggle').addEventListener('click',function(e){
   e.preventDefault();
   window._smartMode=!window._smartMode;
-  this.textContent=window._smartMode?'🧠 Smart ON':'🧠 Smart';
+  this.textContent=window._smartMode?'🧠 Voice ON':'⚡ Browser Mic';
   this.className=window._smartMode?'on':'';
-  document.getElementById('modeIndicator').textContent=window._smartMode?'🧠 Smart Transcription':'⚡ Browser STT';
+  document.getElementById('modeIndicator').textContent=window._smartMode?'🎙️ Natural Voice Reply':'⚡ Browser STT';
 });
 document.getElementById('rtToggle').addEventListener('click',function(e){
   e.preventDefault();
