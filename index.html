@@ -10,20 +10,21 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:'Montserrat',system-ui,-apple-system,sans-serif;
-  background:#000;color:#c8d6e5;
+  background:radial-gradient(circle at 50% 0%,rgba(66,133,244,.12),transparent 38%),#000;color:#e8eaed;
   min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px;
   overflow:hidden
 }
-.container{max-width:440px;width:100%;margin:auto;position:relative}
+.container{max-width:480px;width:100%;margin:auto;position:relative}
+.container:before{content:'LeadRescuePro • Hermes';display:block;text-align:center;color:#5f6368;font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:18px}
 
 /* ── PIN Gate ── */
 #pg{
   background:linear-gradient(145deg,#0a0e17,#0f1629);
-  border:1px solid rgba(0,212,255,.15);border-radius:20px;padding:48px 24px 36px;
+  border:1px solid rgba(138,180,248,.18);border-radius:28px;box-shadow:0 24px 80px rgba(0,0,0,.55);padding:48px 24px 36px;
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)
 }
 #pg .lk{font-size:48px;margin-bottom:8px}
-#pg h2{font-size:20px;font-weight:700;color:#00d4ff;margin-bottom:4px;letter-spacing:.5px}
+#pg h2{font-size:20px;font-weight:700;color:#8ab4f8;margin-bottom:4px;letter-spacing:.5px}
 #pg p{font-size:13px;color:#5a7a9a;margin-bottom:24px;font-weight:400}
 .pg{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
 .pg input{
@@ -218,6 +219,7 @@ audio{display:none}
     </div>
 
     <div class="mode-label" id="modeIndicator">⚡ Browser STT</div>
+    <div class="mode-label" id="sysModel">Model: OpenAI Codex via Hermes API</div>
   </div>
 
   <audio id="ap"></audio>
@@ -270,7 +272,7 @@ function unlock(){
 function boot(){
   pg.style.display='none';mu.style.display='block';
   document.getElementById('ti').disabled=false;
-  addMsg('h','Hi! Tap the mic or type.');
+  addMsg('h','Hi! I am ready. Tap the mic or type your message.');
   setSt('i','Ready');
   checkB();
 }
@@ -283,6 +285,7 @@ var hs=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
 var ap=document.getElementById('ap');
 var xo=window.location.hostname.indexOf('github.io')!==-1||window.location.hostname.indexOf('pages.dev')!==-1;
 var B=xo?'https://lrp-voice.loca.lt':window.location.origin;
+var WSBASE=xo?'wss://lrp-voice.loca.lt':window.location.origin.replace('http','ws');
 
 function hd(){return{'Content-Type':'application/json','bypass-tunnel-reminder':'true'};}
 
@@ -315,7 +318,7 @@ function spk(t){
     x.responseType='json';
     x.onload=function(){
       if(x.status===200&&x.response&&x.response.audio_url){
-        var u=(window.location.origin)+x.response.audio_url;
+        var u=B+x.response.audio_url;
         ap.src=u;
         ap.onended=function(){setSt('i','Ready');r();};
         ap.onerror=function(){setSt('i','Ready');r();};
@@ -334,7 +337,7 @@ async function checkB(){
     var ct=r.headers.get('content-type')||'';
     if(ct.indexOf('json')!==-1&&(await r.json()).status==='ok'){cs.className='sl ok';cs.textContent='⬤ Connected';return;}
   }catch(e){}
-  cs.className='sl no';cs.textContent='⬤ Offline';
+  cs.className='sl no';cs.textContent='⬤ Backend offline';
   setTimeout(checkB,10000);
 }
 
@@ -353,9 +356,9 @@ async function api(t){
       if(i<2){await new Promise(function(r){setTimeout(r,2000);});setSt('pr','Retrying...');}
     }
   }
-  cs.className='sl no';cs.textContent='⬤ Offline';
+  cs.className='sl no';cs.textContent='⬤ Backend offline';
   setTimeout(checkB,10000);
-  return "Backend offline. Try again.";
+  return "Backend offline. I could not reach the voice bridge yet. Try again in a moment.";
 }
 
 async function pns(t){
@@ -465,7 +468,7 @@ function setupRT(){
         else if(msg.type==='reply'){addMsg('h',msg.text);}
         else if(msg.type==='tts'){
           var a=document.getElementById('ap');
-          if(a){a.src=window.location.origin+msg.url;a.onended=function(){setSt('i','Hold');};a.play().catch(function(){setSt('i','Hold');});}
+          if(a){a.src=B+msg.url;a.onended=function(){setSt('i','Hold');};a.play().catch(function(){setSt('i','Hold');});}
           setSt('sp','Speaking...');
         }else if(msg.type==='state'){
           if(msg.status==='thinking')setSt('pr','Thinking...');
@@ -495,7 +498,7 @@ document.getElementById('rtToggle').addEventListener('click',function(e){
   this.className=window._rtMode?'rt on':'rt';
   if(window._rtMode){
     document.getElementById('modeIndicator').textContent='🔴 Real-Time Voice';
-    var wsUrl=(window.location.origin.replace('http','ws'))+'/v2/ws';
+    var wsUrl=WSBASE+'/v2/ws';
     window._rtWs=new WebSocket(wsUrl);
     window._rtWs.onopen=function(){cs.className='sl ok';cs.textContent='⬤ RT';addMsg('h','Hi! Hold mic to talk, release when done.');setupRT();};
     window._rtWs.onerror=function(){addMsg('h','RT unavailable.');window._rtMode=false;document.getElementById('rtToggle').textContent='🔴 Real-Time';document.getElementById('rtToggle').className='rt';document.getElementById('modeIndicator').textContent='⚡ Browser STT';};
